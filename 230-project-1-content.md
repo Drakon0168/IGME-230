@@ -12,10 +12,10 @@
     SFX would be things like swords hitting armor, arrows whistling through the air, and the marching of troops.
 #Gameplay 
 ##  Mechanics
-    There will be 3 lanes across the battlefield starting at the players castle and ending at their opponents.
-    Each castle will have a health value when that reaches 0 that side will lose
-    Each castle will also have some form of gold production which is used to purchase units
-    Units will be sent down lanes meeting their enemies in the middle where they will fight until one dies pushing the frontline to the enemy castle. Upon reaching the castle they will attack it until they are killed by another enemy unit.
+    +There will be 3 lanes across the battlefield starting at the players castle and ending at their opponents.
+    +Each castle will have a health value when that reaches 0 that side will lose
+    +Each castle will also have some form of gold production which is used to purchase units
+    +Units will be sent down lanes meeting their enemies in the middle where they will fight until one dies pushing the frontline to the enemy castle. Upon reaching the castle they will attack it until they are killed by another enemy unit.
 ##	Controls
     Only mouse input is required with clicks to select lanes, spawn units, and upgrade the castle. You can drag to move the camera down the battlefield.
 ##	Teaching
