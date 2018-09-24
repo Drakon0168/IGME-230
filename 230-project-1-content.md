@@ -29,9 +29,17 @@ Only mouse input is required with clicks to select lanes, spawn units, and upgra
 The tutorial will just be a bunch of slides telling the player what the different buttons do and how to play the game.
 ***
 ###	Learning
-The player will have to learn how to balance their gold between upgrading their castle and purchasing troops to attack the enemy or defend the lanes. For instance they 
+The player will have to learn how to balance their gold between upgrading their castle and purchasing troops to attack the enemy or defend the lanes. For instance whether they should start off by buying a large army or focus on their economy at the beginning of the game.
 ***
 # Screenshots
 ***
 # About the Developer
+### Info
+Name: Justin Dennis
+Major: Game Design and Development
+Year: 2nd
+### Skills
+I am pretty good at programming in both C# and Java, I know a little bit of HTML, CSS, PHP, JavaScript, and Lua. I am proficient with Visual Studio, Unity, Monogame, Maya, Autodesk Sketchbook, Photoshop, Aseprite, GameMaker, and many other software related to game design.
+### Interests
+I'm interested in Procedural Generation, AI, and both 3D and 2D Animation.
 ***
