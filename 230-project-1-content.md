@@ -10,7 +10,7 @@ Universal
 # Story
 Your kingdom is at war and as king and strategist it is your duty to defend it, you must build up your economy and hire soldiers and workers to create an army that can win this war. You must send your troops at the enemy castle to tear it down and enforce your will.
 ***
-# Esthetics
+# Aesthetics
 2D cartoon art style.
 Looping medieval background music.
 SFX would be things like swords hitting armor, arrows whistling through the air, and the marching of troops.
