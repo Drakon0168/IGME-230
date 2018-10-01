@@ -33,9 +33,9 @@ The player will have to learn how to balance their gold between upgrading their 
 ***
 # Screenshots
 Gameplay
-![GameplayScreenshot][https://github.com/Drakon0168/IGME-230/blob/master/Screenshot01.png]
+![alt text](https://github.com/Drakon0168/IGME-230/blob/master/Screenshot01.png "Gameplay Screenshot")
 Upgrade Screen
-![UpgradeScreenshot][Screenshot02.png]
+![alt text][Screenshot02.png "Upgrade Screen Screenshot"]
 ***
 # About the Developer
 ### Info
