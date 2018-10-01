@@ -32,6 +32,10 @@ The tutorial will just be a bunch of slides telling the player what the differen
 The player will have to learn how to balance their gold between upgrading their castle and purchasing troops to attack the enemy or defend the lanes. For instance whether they should start off by buying a large army or focus on their economy at the beginning of the game.
 ***
 # Screenshots
+Gameplay
+[GameplayScreenshot][Screenshot01.png]
+Upgrade Screen
+[UpgradeScreenshot][Screenshot02.png]
 ***
 # About the Developer
 ### Info
