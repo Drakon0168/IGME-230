@@ -1,6 +1,9 @@
 "use strict";
 
-const app = new PIXI.Application(1024,768);
-document.body.appendChild(app.view);
-
-app.stage.addChild(new UIButton(0,0, 100, 100 "I am a Button!"));
+window.onload = (e) => {
+    const app = new PIXI.Application(600,600);
+    document.body.appendChild(app.view);
+    
+    let button1 = new UIButton(0,0, 100, 100, "I am a Button!");
+    app.stage.addChild(button1);
+}

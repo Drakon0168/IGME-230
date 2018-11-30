@@ -1,16 +1,19 @@
+"use strict";
+
 class UIButton extends PIXI.Graphics{
-    constructor(let x = 0, let y = 0, let width = 100, let height = 100, let title = "Button"){
+    constructor(x = 0, y = 0, width = 100, height = 100, title = "Button"){
         super();
+        
+        this.beginFill(0xFFFFFF);
+        
+        this.drawRect(width * -1 / 2, height * -1 / -2, width / 2, height / 2);
+        
+        this.endFill();
         
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.title = title;
-        
-        this.beginFill(0xFFFFFF);
-        
-        this.drawRect(width / -2, height / -2, width / 2, height / 2);
-        
     }
 }
