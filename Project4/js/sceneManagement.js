@@ -2,10 +2,11 @@
 
 class SceneManager{
     constructor(stage){
-        this.menuScene = new PIXI.Container();
-        this.gameScene = new PIXI.Container();
-        this.upgradeScene = new PIXI.Container();
-        this.gameOverScene = new PIXI.Container();
+        this.menuScene = new MainMenuScreen(this);
+        this.gameScene = new GameScreen(this);
+        this.upgradeScene = new UpgradeScreen(this);
+        this.gameOverScene = new GameOverScreen(this);
+        
         this.sceneWidth = app.view.width;
         this.sceneHeight = app.view.height;
             
@@ -18,10 +19,10 @@ class SceneManager{
         app.stage.addChild(this.upgradeScene);
         app.stage.addChild(this.gameOverScene);
         
-        this.setupMenuScene();
-        this.setupGameScene();
-        this.setupUpgradeScene();
-        this.setupGameOverScene();
+        this.menuScene.setup();
+        this.gameScene.setup();
+        this.upgradeScene.setup();
+        this.gameOverScene.setup();
         
         this.switchScene("MENU");
     }
@@ -55,41 +56,92 @@ class SceneManager{
                 break;
         }
     }
-    
-    setupMenuScene(){
-        let playButton = new UIButton(this.sceneWidth / 2, this.sceneHeight / 2, 200, 50, "Play");
-        playButton.setAction(function(){
-            sceneManager.switchScene("GAME");
-        });
-        playButton.stageButton(this.menuScene);
+}
+
+class Scene extends PIXI.Container{
+    constructor(sceneManager){
+        super();
+        this.sceneManager = sceneManager;
     }
     
-    setupGameScene(){
-        let pauseButton = new UIButton(25, 25, 50, 50, "||");
-        pauseButton.setAction(function(){
+    setup(){
+        
+    }
+    
+    reset(){
+        
+    }
+    
+    centerText(text, x = text.x, y = text.y){
+        text.x = x + text.width / 2;
+        text.y = y + text.height / 2;
+    }
+}
+
+class MainMenuScreen extends Scene{
+    constructor(sceneManager){
+        super(sceneManager);
+    }
+    
+    setup(){
+        this.playButton = new UIButton(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight / 2, 200, 50, "Play");
+        this.playButton.setAction(function(){
+            sceneManager.switchScene("GAME");
+        });
+        this.playButton.stageButton(this);
+    }
+}
+
+class GameScreen extends Scene{
+    constructor(sceneManager){
+        super(sceneManager);
+    }
+    
+    setup(){
+        this.pauseButton = new UIButton(35, 35, 50, 50, "||");
+        this.pauseButton.setAction(function(){
             sceneManager.switchScene("UPGRADE");
         });
-        pauseButton.stageButton(this.gameScene);
+        this.pauseButton.stageButton(this);
+    }
+}
+
+class UpgradeScreen extends Scene{
+    constructor(sceneManager){
+        super(sceneManager);
     }
     
-    setupUpgradeScene(){
-        let returnButton = new UIButton(this.sceneWidth / 2, 35, 200, 50, "Return");
-        returnButton.setAction(function(){
+    setup(){
+        this.returnButton = new UIButton(this.sceneManager.sceneWidth / 2, 35, 200, 50, "Return");
+        this.returnButton.setAction(function(){
+            sceneManager.switchScene("GAMEOVER");
+        });
+        this.returnButton.stageButton(this);
+    }
+}
+
+class GameOverScreen extends Scene{
+    constructor(sceneManager){
+        super(sceneManager);
+    }
+    
+    setup(){
+        this.playAgainButton = new UIButton(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight / 2, 200, 50, "Play Again");
+        this.playAgainButton.setAction(function(){
             sceneManager.switchScene("GAME");
         });
-    }
-    
-    setupGameOverScene(){
-        let menuButton = new UIButton(this.sceneWidth / 2, this.sceneHeight / 2, 200, 50, "Menu");
-        menuButton.setAction(function(){
+        this.playAgainButton.stageButton(this);
+        
+        this.menuButton = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 60, 200, 50, "Main Menu");
+        this.menuButton.setAction(function(){
             sceneManager.switchScene("MENU");
         });
-        menuButton.stageButton(this.gameOverScene);
+        this.menuButton.stageButton(this);
     }
 }
 
 class UIButton{
-    constructor(x = 0, y = 0, width = 100, height = 100, title = "Button", baseColor=0xFFFFFF, hoverColor=0xDDDDDD, pressedColor=0xAAAAAA){
+    constructor(x = 0, y = 0, width = 100, height = 100, title = "", baseColor=0xFFFFFF, hoverColor=0xDDDDDD, pressedColor=0xAAAAAA){
         this.box = new PIXI.Graphics();
         this.text = new PIXI.Text(title);
         this.title = title;
