@@ -4,6 +4,7 @@ class SceneManager{
     constructor(stage){
         this.sceneWidth = app.view.width;
         this.sceneHeight = app.view.height;
+        this.deltaTime = 0;
         
         this.menuScene = new MainMenuScreen(this);
         this.gameScene = new GameScreen(this);
@@ -24,6 +25,7 @@ class SceneManager{
         this.upgradeScene.setup();
         this.gameOverScene.setup();
         
+        this.currentScene = undefined;
         this.switchScene("MENU");
     }
     
@@ -31,30 +33,40 @@ class SceneManager{
         switch(sceneName){
             case "MENU":
             default:
+                this.currentScene = this.menuScene;
                 this.menuScene.visible = true;
                 this.gameScene.visible = false;
                 this.upgradeScene.visible = false;
                 this.gameOverScene.visible = false;
                 break;
             case "GAME":
+                this.currentScene = this.gameScene;
                 this.menuScene.visible = false;
                 this.gameScene.visible = true;
                 this.upgradeScene.visible = false;
                 this.gameOverScene.visible = false;
                 break;
             case "UPGRADE":
+                this.currentScene = this.upgradeScene;
                 this.menuScene.visible = false;
                 this.gameScene.visible = false;
                 this.upgradeScene.visible = true;
                 this.gameOverScene.visible = false;
                 break;
             case "GAMEOVER":
+                this.currentScene = this.gameOverScene;
                 this.menuScene.visible = false;
                 this.gameScene.visible = false;
                 this.upgradeScene.visible = false;
                 this.gameOverScene.visible = true;
                 break;
         }
+    }
+    
+    update(deltaTime){
+        this.deltaTime = deltaTime;
+        
+        this.currentScene.update(deltaTime);
     }
 }
 
@@ -84,6 +96,10 @@ class Scene extends PIXI.Container{
     }
     
     reset(){
+        
+    }
+    
+    update(deltaTime){
         
     }
     
@@ -128,31 +144,31 @@ class GameScreen extends Scene{
         
         this.swordButton = new UIButton(this.sceneManager.sceneWidth / 2 - 220, 120, 100, 100, "Sword\nUnit");
         this.swordButton.setAction(function(){
-            sceneManager.gameScene.spawnUnit("SWORD");
+            sceneManager.gameScene.spawnUnit("SWORD", 1);
         });
         this.swordButton.stageButton(this);
         
         this.spearButton = new UIButton(this.sceneManager.sceneWidth / 2 - 110, 120, 100, 100, "Spear\nUnit");
         this.spearButton.setAction(function(){
-            sceneManager.gameScene.spawnUnit("SPEAR");
+            sceneManager.gameScene.spawnUnit("SPEAR", 1);
         });
         this.spearButton.stageButton(this);
         
         this.bowButton = new UIButton(this.sceneManager.sceneWidth / 2, 120, 100, 100, "Bow\nUnit");
         this.bowButton.setAction(function(){
-            sceneManager.gameScene.spawnUnit("BOW");
+            sceneManager.gameScene.spawnUnit("BOW", 1);
         });
         this.bowButton.stageButton(this);
         
         this.flyingButton = new UIButton(this.sceneManager.sceneWidth / 2 + 110, 120, 100, 100, "Flying\nUnit");
         this.flyingButton.setAction(function(){
-            sceneManager.gameScene.spawnUnit("FLYING");
+            sceneManager.gameScene.spawnUnit("FLYING", 1);
         });
         this.flyingButton.stageButton(this);
         
         this.shieldButton = new UIButton(this.sceneManager.sceneWidth / 2 + 220, 120, 100, 100, "Shield\nUnit");
         this.shieldButton.setAction(function(){
-            sceneManager.gameScene.spawnUnit("SHIELD");
+            sceneManager.gameScene.spawnUnit("SHIELD", 1);
         });
         this.shieldButton.stageButton(this);
         
@@ -180,6 +196,12 @@ class GameScreen extends Scene{
         //Setup Castle
     }
     
+    update(deltaTime){
+        this.lane1.update(deltaTime);
+        this.lane2.update(deltaTime);
+        this.lane3.update(deltaTime);
+    }
+    
     switchLane(lane){
         switch(lane){
             case 1:
@@ -204,32 +226,30 @@ class GameScreen extends Scene{
         }
     }
     
-    spawnUnit(unitType){
+    spawnUnit(unitType, direction){
         let newUnit = undefined;
         
         switch(unitType){
             case "SWORD":
             default:
-                newUnit = new Unit(this.selectedLane, 75, 40, 0xFF0000, "Sword");
+                newUnit = new Unit(this.selectedLane, 75, 40, 0xFF0000, "Sword", direction);
                 break;
             case "SPEAR":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0x00FF00, "Spear");
+                newUnit = new Unit(this.selectedLane, 75, 40, 0x00FF00, "Spear", direction);
                 break;
             case "BOW":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0x0000FF, "Bow");
+                newUnit = new Unit(this.selectedLane, 75, 40, 0x0000FF, "Bow", direction);
                 break;
             case "FLYING":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0xFFFF00, "Flying");
+                newUnit = new Unit(this.selectedLane, 75, 40, 0xFFFF00, "Flying", direction);
                 break;
             case "SHIELD":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0xDD00DD, "Shield");
+                newUnit = new Unit(this.selectedLane, 75, 40, 0xDD00DD, "Shield", direction);
                 break;
         }
         
-        newUnit.drawSelf();
         this.selectedLane.units.push(newUnit);
-        super.addChild(newUnit);
-        //debugger;
+        newUnit.stageUnit(this);
     }
 }
 
@@ -333,5 +353,26 @@ class Lane extends UIButton{
         else{
             super.drawBox(this.baseColor);
         }
+    }
+    
+    update(deltaTime){
+        for(let i = 0; i < this.units.length; i++){
+            units[i].update(deltaTime);
+        }
+    }
+}
+
+class Camera{
+    constructor(){
+        this.xOffset = 0;
+        this.scrollSpeed = 100;
+    }
+    
+    static getOffset(){
+        return this.xOffset;
+    }
+    
+    static Scroll(direction){
+        this.xOffset += this.scrollSpeed * direction * SceneManager.getDeltaTime();
     }
 }

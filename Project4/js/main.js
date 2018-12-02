@@ -10,3 +10,15 @@ PIXI.loader.add(["images/UpgradeScreen.png"]).
 on("progress",e=>{console.log(`progress=${e.progress}`)});
 
 let sceneManager = new SceneManager(app);
+
+//Update Loop
+function update(){
+    let deltaTime = 1/app.ticker.FPS;
+    if(deltaTime > 1/12){
+        deltaTime = 1/12;
+    }
+    
+    sceneManager.update(deltaTime);
+}
+
+app.ticker.add(update);
