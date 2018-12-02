@@ -1,5 +1,5 @@
 "use strict";
-
+//Scene Manager -----------------------------------------------------------------------------
 class SceneManager{
     constructor(stage){
         this.menuScene = new MainMenuScreen(this);
@@ -58,10 +58,18 @@ class SceneManager{
     }
 }
 
+//Scene -------------------------------------------------------------------------------------
 class Scene extends PIXI.Container{
-    constructor(sceneManager){
+    constructor(sceneManager, backgroundImage = ""){
         super();
         this.sceneManager = sceneManager;
+        if(backgroundImage != ""){
+            this.background = new PIXI.Sprite.fromImage(PIXI.loader.resources["UpgradeScreen.png"].texture);
+            this.background.anchor.set(0.5,0.5);
+            this.background.x = this.sceneManager.sceneWidth / 2;
+            this.background.y = this.sceneManager.sceneHeight / 2;
+            this.addChild(this.background);
+        }
     }
     
     setup(){
@@ -78,6 +86,7 @@ class Scene extends PIXI.Container{
     }
 }
 
+//Main Menu ---------------------------------------------------------------------------------
 class MainMenuScreen extends Scene{
     constructor(sceneManager){
         super(sceneManager);
@@ -92,6 +101,7 @@ class MainMenuScreen extends Scene{
     }
 }
 
+//Game Screen -------------------------------------------------------------------------------
 class GameScreen extends Scene{
     constructor(sceneManager){
         super(sceneManager);
@@ -103,12 +113,28 @@ class GameScreen extends Scene{
             sceneManager.switchScene("UPGRADE");
         });
         this.pauseButton.stageButton(this);
+        
+        this.swordButton = new UIButton(this.sceneManager.sceneWidth / 2 - 220, 120, 100, 100, "Sword\nUnit");
+        this.swordButton.stageButton(this);
+        
+        this.spearButton = new UIButton(this.sceneManager.sceneWidth / 2 - 110, 120, 100, 100, "Spear\nUnit");
+        this.spearButton.stageButton(this);
+        
+        this.bowButton = new UIButton(this.sceneManager.sceneWidth / 2, 120, 100, 100, "Bow\nUnit");
+        this.bowButton.stageButton(this);
+        
+        this.flyingButton = new UIButton(this.sceneManager.sceneWidth / 2 + 110, 120, 100, 100, "Flying\nUnit");
+        this.flyingButton.stageButton(this);
+        
+        this.shieldButton = new UIButton(this.sceneManager.sceneWidth / 2 + 220, 120, 100, 100, "Shield\nUnit");
+        this.shieldButton.stageButton(this);
     }
 }
 
+//Upgrade Screen-----------------------------------------------------------------------------
 class UpgradeScreen extends Scene{
     constructor(sceneManager){
-        super(sceneManager);
+        super(sceneManager, "UpgradeScreen.png");
     }
     
     setup(){
@@ -120,6 +146,7 @@ class UpgradeScreen extends Scene{
     }
 }
 
+//Game Over Screen---------------------------------------------------------------------------
 class GameOverScreen extends Scene{
     constructor(sceneManager){
         super(sceneManager);
@@ -140,6 +167,7 @@ class GameOverScreen extends Scene{
     }
 }
 
+//UI Button ---------------------------------------------------------------------------------
 class UIButton{
     constructor(x = 0, y = 0, width = 100, height = 100, title = "", baseColor=0xFFFFFF, hoverColor=0xDDDDDD, pressedColor=0xAAAAAA){
         this.box = new PIXI.Graphics();
