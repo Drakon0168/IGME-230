@@ -119,6 +119,7 @@ class GameScreen extends Scene{
     setup(){
         super.setup();
         
+        //Setup Buttons
         this.pauseButton = new UIButton(35, 35, 50, 50, "||");
         this.pauseButton.setAction(function(){
             sceneManager.switchScene("UPGRADE");
@@ -126,19 +127,108 @@ class GameScreen extends Scene{
         this.pauseButton.stageButton(this);
         
         this.swordButton = new UIButton(this.sceneManager.sceneWidth / 2 - 220, 120, 100, 100, "Sword\nUnit");
+        this.swordButton.setAction(function(){
+            sceneManager.gameScene.spawnUnit("SWORD");
+        });
         this.swordButton.stageButton(this);
         
         this.spearButton = new UIButton(this.sceneManager.sceneWidth / 2 - 110, 120, 100, 100, "Spear\nUnit");
+        this.spearButton.setAction(function(){
+            sceneManager.gameScene.spawnUnit("SPEAR");
+        });
         this.spearButton.stageButton(this);
         
         this.bowButton = new UIButton(this.sceneManager.sceneWidth / 2, 120, 100, 100, "Bow\nUnit");
+        this.bowButton.setAction(function(){
+            sceneManager.gameScene.spawnUnit("BOW");
+        });
         this.bowButton.stageButton(this);
         
         this.flyingButton = new UIButton(this.sceneManager.sceneWidth / 2 + 110, 120, 100, 100, "Flying\nUnit");
+        this.flyingButton.setAction(function(){
+            sceneManager.gameScene.spawnUnit("FLYING");
+        });
         this.flyingButton.stageButton(this);
         
         this.shieldButton = new UIButton(this.sceneManager.sceneWidth / 2 + 220, 120, 100, 100, "Shield\nUnit");
+        this.shieldButton.setAction(function(){
+            sceneManager.gameScene.spawnUnit("SHIELD");
+        });
         this.shieldButton.stageButton(this);
+        
+        //Setup Lanes
+        this.lane1 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 280, 10, 100);
+        this.lane1.setAction(function(){
+            sceneManager.gameScene.switchLane(1);
+        });
+        this.lane1.stageButton(this);
+        
+        this.lane2 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 170, 10, 100);
+        this.lane2.setAction(function(){
+            sceneManager.gameScene.switchLane(2);
+        });
+        this.lane2.stageButton(this);
+        
+        this.lane3 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 60, 10, 100);
+        this.lane3.setAction(function(){
+            sceneManager.gameScene.switchLane(3);
+        });
+        this.lane3.stageButton(this);
+        
+        this.switchLane(2);
+
+        //Setup Castle
+    }
+    
+    switchLane(lane){
+        switch(lane){
+            case 1:
+            default:
+                this.selectedLane = this.lane1;
+                this.lane1.select(true);
+                this.lane2.select(false);
+                this.lane3.select(false);
+                break;
+            case 2:
+                this.selectedLane = this.lane2;
+                this.lane1.select(false);
+                this.lane2.select(true);
+                this.lane3.select(false);
+                break;
+            case 3:
+                this.selectedLane = this.lane3;
+                this.lane1.select(false);
+                this.lane2.select(false);
+                this.lane3.select(true);
+                break;
+        }
+    }
+    
+    spawnUnit(unitType){
+        let newUnit = undefined;
+        
+        switch(unitType){
+            case "SWORD":
+            default:
+                newUnit = new Unit(this.selectedLane, 75, 40, 0xFF0000, "Sword");
+                break;
+            case "SPEAR":
+                newUnit = new Unit(this.selectedLane, 75, 40, 0x00FF00, "Spear");
+                break;
+            case "BOW":
+                newUnit = new Unit(this.selectedLane, 75, 40, 0x0000FF, "Bow");
+                break;
+            case "FLYING":
+                newUnit = new Unit(this.selectedLane, 75, 40, 0xFFFF00, "Flying");
+                break;
+            case "SHIELD":
+                newUnit = new Unit(this.selectedLane, 75, 40, 0xDD00DD, "Shield");
+                break;
+        }
+        
+        this.selectedLane.units.push(newUnit);
+        this.addChild(newUnit);
+        //debugger;
     }
 }
 
@@ -221,5 +311,26 @@ class UIButton{
         this.box.on('pointerdown', function(){
             action();
         });
+    }
+}
+
+//Lane --------------------------------------------------------------------------------------
+class Lane extends UIButton{
+    constructor(x = 510, y = 384, length=10, height=100){
+        super(x, y, length * 100, height, "");
+        
+        this.selected = false;
+        this.length = length;
+        this.pixelLength = length * 100;
+        this.units = [];
+    }
+    
+    select(value){
+        if(value){
+            super.drawBox(this.hoverColor);
+        }
+        else{
+            super.drawBox(this.baseColor);
+        }
     }
 }
