@@ -2,14 +2,14 @@
 //Scene Manager -----------------------------------------------------------------------------
 class SceneManager{
     constructor(stage){
+        this.sceneWidth = app.view.width;
+        this.sceneHeight = app.view.height;
+        
         this.menuScene = new MainMenuScreen(this);
         this.gameScene = new GameScreen(this);
         this.upgradeScene = new UpgradeScreen(this);
         this.gameOverScene = new GameOverScreen(this);
         
-        this.sceneWidth = app.view.width;
-        this.sceneHeight = app.view.height;
-            
         this.gameScene.visible = false;
         this.upgradeScene.visible = false;
         this.gameOverScene.visible = false;
@@ -60,20 +60,27 @@ class SceneManager{
 
 //Scene -------------------------------------------------------------------------------------
 class Scene extends PIXI.Container{
-    constructor(sceneManager, backgroundImage = ""){
+    constructor(sceneManager){
         super();
         this.sceneManager = sceneManager;
-        if(backgroundImage != ""){
-            this.background = new PIXI.Sprite.fromImage(PIXI.loader.resources["UpgradeScreen.png"].texture);
-            this.background.anchor.set(0.5,0.5);
-            this.background.x = this.sceneManager.sceneWidth / 2;
-            this.background.y = this.sceneManager.sceneHeight / 2;
-            this.addChild(this.background);
-        }
     }
     
-    setup(){
+    setup(backgroundImage = ""){
+        if(backgroundImage != ""){
+            this.background = new PIXI.Sprite(PIXI.loader.resources[`images/${backgroundImage}`].texture);
+            this.background.anchor.set(0.5,0.5);
+            this.background.scale.set(1024,768);
+            this.background.x = this.sceneManager.sceneWidth / 2;
+            this.background.y = this.sceneManager.sceneHeight / 2;
+        }
+        else{
+            this.background = new PIXI.Graphics();
+            this.background.beginFill(0xAAAAAA);
+            this.background.drawRect(0, 0, this.sceneManager.sceneWidth, this.sceneManager.sceneHeight);
+            this.background.endFill();
+        }
         
+        this.addChild(this.background);
     }
     
     reset(){
@@ -93,6 +100,8 @@ class MainMenuScreen extends Scene{
     }
     
     setup(){
+        super.setup();
+        
         this.playButton = new UIButton(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight / 2, 200, 50, "Play");
         this.playButton.setAction(function(){
             sceneManager.switchScene("GAME");
@@ -108,6 +117,8 @@ class GameScreen extends Scene{
     }
     
     setup(){
+        super.setup();
+        
         this.pauseButton = new UIButton(35, 35, 50, 50, "||");
         this.pauseButton.setAction(function(){
             sceneManager.switchScene("UPGRADE");
@@ -134,10 +145,12 @@ class GameScreen extends Scene{
 //Upgrade Screen-----------------------------------------------------------------------------
 class UpgradeScreen extends Scene{
     constructor(sceneManager){
-        super(sceneManager, "UpgradeScreen.png");
+        super(sceneManager);
     }
     
     setup(){
+        super.setup("UpgradeScreen.png");
+        
         this.returnButton = new UIButton(this.sceneManager.sceneWidth / 2, 35, 200, 50, "Return");
         this.returnButton.setAction(function(){
             sceneManager.switchScene("GAMEOVER");
@@ -153,6 +166,8 @@ class GameOverScreen extends Scene{
     }
     
     setup(){
+        super.setup();
+        
         this.playAgainButton = new UIButton(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight / 2, 200, 50, "Play Again");
         this.playAgainButton.setAction(function(){
             sceneManager.switchScene("GAME");
