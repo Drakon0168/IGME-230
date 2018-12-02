@@ -1,21 +1,22 @@
 class Unit extends PIXI.Graphics{
-    constructor(lane, height = 75, width = 40, color = 0x777777, type = ""){
+    constructor(lane, unitHeight = 75, unitWidth = 40, color = 0x777777, type = ""){
         super();
         
         this.color = color;
-        this.width = width;
-        this.height = height;
+        this.unitWidth = unitWidth;
+        this.unitHeight = unitHeight;
         this.x = lane.x;
         this.y = lane.y - (this.height / 2);
+        this.type = type;
         
         this.drawSelf();
         
-        console.log(`Spawned ${type} unit at (${this.x},${this.y})`);
+        console.log(`Spawned ${this.type} unit at (${this.x},${this.y}, ${this.unitWidth}, ${this.unitHeight})`);
     }
     
     drawSelf(){
         this.beginFill(this.color);
-        this.drawRect(this.x - (this.width / 2), this.y - (this.height / 2), this.width, this.height);
+        this.drawRect(this.x - (this.unitWidth / 2), this.y - (this.unitHeight / 2), this.unitWidth, this.unitHeight);
         this.endFill();
     }
     

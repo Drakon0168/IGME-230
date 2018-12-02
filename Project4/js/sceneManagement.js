@@ -157,19 +157,19 @@ class GameScreen extends Scene{
         this.shieldButton.stageButton(this);
         
         //Setup Lanes
-        this.lane1 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 280, 10, 100);
+        this.lane1 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 350, 10, 100);
         this.lane1.setAction(function(){
             sceneManager.gameScene.switchLane(1);
         });
         this.lane1.stageButton(this);
         
-        this.lane2 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 170, 10, 100);
+        this.lane2 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 240, 10, 100);
         this.lane2.setAction(function(){
             sceneManager.gameScene.switchLane(2);
         });
         this.lane2.stageButton(this);
         
-        this.lane3 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 60, 10, 100);
+        this.lane3 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 130, 10, 100);
         this.lane3.setAction(function(){
             sceneManager.gameScene.switchLane(3);
         });
@@ -226,8 +226,9 @@ class GameScreen extends Scene{
                 break;
         }
         
+        newUnit.drawSelf();
         this.selectedLane.units.push(newUnit);
-        this.addChild(newUnit);
+        super.addChild(newUnit);
         //debugger;
     }
 }
