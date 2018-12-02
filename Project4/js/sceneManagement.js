@@ -357,7 +357,7 @@ class Lane extends UIButton{
     
     update(deltaTime){
         for(let i = 0; i < this.units.length; i++){
-            units[i].update(deltaTime);
+            this.units[i].update(deltaTime);
         }
     }
 }

@@ -30,6 +30,12 @@ class Unit{
     }
     
     update(deltaTime){
+        this.move(deltaTime);
+        
+        this.image.x = this.x;
+    }
+    
+    move(deltaTime){
         this.x += this.speed * deltaTime;
     }
     
