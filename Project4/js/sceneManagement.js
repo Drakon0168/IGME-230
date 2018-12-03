@@ -150,7 +150,7 @@ class GameScreen extends Scene{
         
         this.spearButton = new UIButton(this.sceneManager.sceneWidth / 2 - 110, 120, 100, 100, "Spear\nUnit");
         this.spearButton.setAction(function(){
-            sceneManager.gameScene.spawnUnit("SPEAR", 1);
+            sceneManager.gameScene.spawnUnit("SPEAR", -1);
         });
         this.spearButton.stageButton(this);
         
@@ -227,6 +227,17 @@ class GameScreen extends Scene{
     }
     
     spawnUnit(unitType, direction){
+        if(direction == 1){
+            if(this.selectedLane.sectionFull(0)){
+                return;
+            }
+        }
+        else{
+            if(this.selectedLane.sectionFull(this.selectedLane.length - 1)){
+                return;
+            }
+        }
+        
         let newUnit = undefined;
         
         switch(unitType){
@@ -339,10 +350,11 @@ class UIButton{
 class Lane extends UIButton{
     constructor(x = 510, y = 384, length=10, height=100){
         super(x, y, length * 100, height, "");
+        this.sectionLength = 100;
         
         this.selected = false;
         this.length = length;
-        this.pixelLength = length * 100;
+        this.pixelLength = length * this.sectionLength;
         this.units = [];
     }
     
@@ -359,6 +371,26 @@ class Lane extends UIButton{
         for(let i = 0; i < this.units.length; i++){
             this.units[i].update(deltaTime);
         }
+    }
+    
+    sectionFull(index){
+        if(index >= this.length || index < 0){
+            return true;
+        }
+        
+        let sectionMin = (this.x - (this.pixelLength / 2)) + (index * this.sectionLength);
+        let sectionMax = (this.x - (this.pixelLength / 2)) + ((index + 1) * this.sectionLength);
+        
+        for(let i = 0; i < this.units.length; i++){
+            if(this.units[i].x > sectionMin && this.units[i].x < sectionMax){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    getSection(xValue){
+        let currentSection = Math.floor((xValue - (this.x - (this.pixelLength / 2))) / this.sectionLength);
     }
 }
 

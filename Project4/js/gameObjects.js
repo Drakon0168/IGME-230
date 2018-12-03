@@ -1,11 +1,12 @@
 class Unit{
     constructor(lane, height = 75, width = 40, color = 0x777777, type = "", direction){
         this.color = color;
+        this.direction = direction;
         this.width = width;
         this.height = height;
         this.image = new PIXI.Graphics();
         this.lane = lane;
-        this.x = lane.x - (lane.width / 2 * direction);
+        this.x = lane.x - ((lane.width / 2) * direction);
         this.y = lane.y - (this.height / 2);
         this.type = type;
         
@@ -30,13 +31,18 @@ class Unit{
     }
     
     update(deltaTime){
-        this.move(deltaTime);
+        let currentSection = this.lane.getSection(this.x);
+        
+        if(!this.lane.sectionFull(currentSection + this.direction)){
+            this.move(deltaTime);
+        }
         
         this.image.x = this.x;
     }
     
     move(deltaTime){
-        this.x += this.speed * deltaTime;
+        this.x += this.speed * this.direction * deltaTime;
+        console.log(this.x);
     }
     
     stageUnit(stage){
