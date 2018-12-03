@@ -136,7 +136,7 @@ class GameScreen extends Scene{
         super.setup();
         
         //Setup Buttons
-        this.pauseButton = new UIButton(35, 35, 50, 50, "||");
+        this.pauseButton = new UIButton(85, 35, 150, 50, "Upgrade");
         this.pauseButton.setAction(function(){
             sceneManager.switchScene("UPGRADE");
         });
@@ -144,7 +144,7 @@ class GameScreen extends Scene{
         
         this.swordButton = new UIButton(this.sceneManager.sceneWidth / 2 - 220, 120, 100, 100, "Sword\nUnit");
         this.swordButton.setAction(function(){
-            sceneManager.gameScene.spawnUnit("SWORD", 1);
+            sceneManager.gameScene.spawnUnit("SWORD", -1);
         });
         this.swordButton.stageButton(this);
         
@@ -243,19 +243,19 @@ class GameScreen extends Scene{
         switch(unitType){
             case "SWORD":
             default:
-                newUnit = new Unit(this.selectedLane, 75, 40, 0xFF0000, "Sword", direction);
+                newUnit = new Unit(this.selectedLane, 75, 40, 0xFF0000, "SWORD", direction);
                 break;
             case "SPEAR":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0x00FF00, "Spear", direction);
+                newUnit = new Unit(this.selectedLane, 75, 40, 0x00FF00, "SPEAR", direction);
                 break;
             case "BOW":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0x0000FF, "Bow", direction);
+                newUnit = new Unit(this.selectedLane, 75, 40, 0x0000FF, "BOW", direction);
                 break;
             case "FLYING":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0xFFFF00, "Flying", direction);
+                newUnit = new Unit(this.selectedLane, 75, 40, 0xFFFF00, "FLYING", direction);
                 break;
             case "SHIELD":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0xDD00DD, "Shield", direction);
+                newUnit = new Unit(this.selectedLane, 75, 40, 0xDD00DD, "SHIELD", direction);
                 break;
         }
         
@@ -275,7 +275,7 @@ class UpgradeScreen extends Scene{
         
         this.returnButton = new UIButton(this.sceneManager.sceneWidth / 2, 35, 200, 50, "Return");
         this.returnButton.setAction(function(){
-            sceneManager.switchScene("GAMEOVER");
+            sceneManager.switchScene("GAME");
         });
         this.returnButton.stageButton(this);
     }
@@ -371,6 +371,8 @@ class Lane extends UIButton{
         for(let i = 0; i < this.units.length; i++){
             this.units[i].update(deltaTime);
         }
+        
+        this.units = this.units.filter(u=>u.alive)
     }
     
     sectionFull(index){
@@ -383,7 +385,7 @@ class Lane extends UIButton{
         
         for(let i = 0; i < this.units.length; i++){
             if(this.units[i].x > sectionMin && this.units[i].x < sectionMax){
-                return true;
+                return this.units[i];
             }
         }
         return false;
@@ -391,6 +393,7 @@ class Lane extends UIButton{
     
     getSection(xValue){
         let currentSection = Math.floor((xValue - (this.x - (this.pixelLength / 2))) / this.sectionLength);
+        return currentSection;
     }
 }
 
