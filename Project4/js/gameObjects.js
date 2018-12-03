@@ -73,23 +73,32 @@ class Unit{
         let currentSection = this.lane.getSection(this.x);
         let collidingUnit = this.lane.sectionFull(currentSection + this.direction);
         if(collidingUnit){
-            if(collidingUnit.health != undefined){
+            if(collidingUnit.health != undefined && collidingUnit.direction != this.direction){
                 if(this.attackTimer > (1 / this.attackSpeed)){
                     collidingUnit.health -= this.damage;
+                    collidingUnit.healthBar.width = this.healthBarWidth * (this.health / this.maxHealth);
+                    this.attackTimer = 0;
+                    
+                    if(collidingUnit.type == "SHIELD"){
+                        console.log("Enemy Tank Health: " + collidingUnit.health);
+                    }
+                    
                     if(collidingUnit.health < 0){
                         collidingUnit.die();
                     }
-                    this.attackTimer = 0;
                 }
             }
         }
-        else{
+        else if((currentSection > 1 && this.direction == -1) || (currentSection < this.lane.length - 2 && this.direction == 1)){
             this.move(deltaTime);
         }
-        
-        this.healthBar.width = this.healthBarWidth * (this.health / this.maxHealth);
+        else{
+            this.image.parent.sceneManager.switchScene("GAMEOVER");
+            this.image.parent.reset();
+        }
         
         //Update Image Positions
+        
         if(this.direction == 1){
             this.image.x = this.x;
             this.healthBar.x = this.x;
@@ -105,13 +114,17 @@ class Unit{
     }
     
     die(){
-        this.image.visible = false;
-        this.healthBar.visible = false;
         this.alive = false;
+        this.unstageUnit();
     }
     
     stageUnit(stage){
         stage.addChild(this.image);
         stage.addChild(this.healthBar);
+    }
+    
+    unstageUnit(){
+        this.image.parent.removeChild(this.image);
+        this.healthBar.parent.removeChild(this.healthBar);
     }
 }

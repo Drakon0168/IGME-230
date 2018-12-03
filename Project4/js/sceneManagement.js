@@ -202,6 +202,12 @@ class GameScreen extends Scene{
         this.lane3.update(deltaTime);
     }
     
+    reset(){
+        this.lane1.resetLane();
+        this.lane2.resetLane();
+        this.lane3.resetLane();
+    }
+    
     switchLane(lane){
         switch(lane){
             case 1:
@@ -394,6 +400,15 @@ class Lane extends UIButton{
     getSection(xValue){
         let currentSection = Math.floor((xValue - (this.x - (this.pixelLength / 2))) / this.sectionLength);
         return currentSection;
+    }
+    
+    resetLane(){
+        
+        for(let i = 0; i < this.units.length; i++){
+            this.units[i].unstageUnit();
+        }
+        
+        this.units = [];
     }
 }
 
