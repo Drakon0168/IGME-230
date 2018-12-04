@@ -6,10 +6,11 @@ class Unit{
         this.height = height;
         this.image = new PIXI.Graphics();
         this.healthBar = new PIXI.Graphics();
-        this.healthBarWidth = 50;
+        this.healthBarWidth = 100;
         this.lane = lane;
-        this.x = lane.x - ((lane.width / 2) * direction);
+        this.x = lane.x + ((lane.pixelLength / 2) * direction*-1);
         this.y = lane.y - (this.height / 2);
+        
         this.type = type;
         this.attackTimer = 0;
         this.alive = true;
@@ -48,7 +49,7 @@ class Unit{
                 break;
             case "SHIELD":
                 this.speed = 50;
-                this.maxHealth = 200;
+                this.maxHealth = 150;
                 this.damage = 25;
                 this.attackSpeed = 0.5;
                 this.attackRange = 50;
@@ -60,11 +61,16 @@ class Unit{
     
     drawSelf(){
         this.image.beginFill(this.color);
-        this.image.drawRect(this.x - (this.width / 2), this.y - (this.height / 2), this.width, this.height);
+        this.image.drawRect(-(this.width / 2), -(this.height / 2), this.width, this.height);
+        this.image.x = this.x;
+        this.image.y = this.y;
         this.image.endFill();
         
         this.healthBar.beginFill(0xFF0000);
-        this.healthBar.drawRect(this.x - 25, this.y - (this.height), 100, 10);
+        this.healthBar.drawRect(-(this.healthBarWidth / 2), -(this.height), this.healthBarWidth, 10);
+        this.healthBar.x = this.x;
+        this.healthBar.y = this.y + 10;
+        this.healthBar.scale.x = this.health / this.maxHealth;
         this.healthBar.endFill();
     }
     
@@ -76,20 +82,19 @@ class Unit{
             if(collidingUnit.health != undefined && collidingUnit.direction != this.direction){
                 if(this.attackTimer > (1 / this.attackSpeed)){
                     collidingUnit.health -= this.damage;
-                    collidingUnit.healthBar.width = this.healthBarWidth * (this.health / this.maxHealth);
                     this.attackTimer = 0;
                     
                     if(collidingUnit.type == "SHIELD"){
                         console.log("Enemy Tank Health: " + collidingUnit.health);
                     }
                     
-                    if(collidingUnit.health < 0){
+                    if(collidingUnit.health <= 0){
                         collidingUnit.die();
                     }
                 }
             }
         }
-        else if((currentSection > 1 && this.direction == -1) || (currentSection < this.lane.length - 2 && this.direction == 1)){
+        else if((currentSection > 1 && this.direction == -1) || (currentSection < this.lane.laneLength - 2 && this.direction == 1)){
             this.move(deltaTime);
         }
         else{
@@ -98,15 +103,9 @@ class Unit{
         }
         
         //Update Image Positions
-        
-        if(this.direction == 1){
-            this.image.x = this.x;
-            this.healthBar.x = this.x;
-        }
-        else{
-            this.image.x = this.x - 1024;
-            this.healthBar.x = this.x - 1024;
-        }
+        this.image.x = this.x;
+        this.healthBar.x = this.x;
+        this.healthBar.scale.x = this.health / this.maxHealth;
     }
     
     move(deltaTime){
@@ -126,5 +125,30 @@ class Unit{
     unstageUnit(){
         this.image.parent.removeChild(this.image);
         this.healthBar.parent.removeChild(this.healthBar);
+    }
+}
+
+class EnemyManager{
+    constructor(gameScene, enemyTypes, spawnRate){
+        this.gameScene = gameScene;
+        this.enemyTypes = enemyTypes;
+        this.spawnRate = spawnRate;
+        this.spawnTimer = 0;
+    }
+    
+    update(deltaTime){
+        this.spawnTimer += deltaTime;
+        
+        if(this.spawnTimer > this.spawnRate){
+            if(this.spawnUnit()){
+                this.spawnTimer = 0;
+            }
+        }
+    }
+    
+    spawnUnit(){
+        let laneNum = Math.floor(Math.random() * 3) + 1;
+        console.log(laneNum);
+        return this.gameScene.spawnUnit(this.enemyTypes[Math.floor(Math.random() * this.enemyTypes.length)], -1, this.gameScene.getLane(laneNum));
     }
 }

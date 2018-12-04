@@ -82,13 +82,15 @@ class Scene extends PIXI.Container{
             this.background = new PIXI.Sprite(PIXI.loader.resources[`images/${backgroundImage}`].texture);
             this.background.anchor.set(0.5,0.5);
             this.background.scale.set(1024,768);
-            this.background.x = this.sceneManager.sceneWidth / 2;
-            this.background.y = this.sceneManager.sceneHeight / 2;
+            this.background.width = this.sceneManager.sceneWidth / 2;
+            this.background.height = this.sceneManager.sceneHeight / 2;
         }
         else{
             this.background = new PIXI.Graphics();
             this.background.beginFill(0xAAAAAA);
-            this.background.drawRect(0, 0, this.sceneManager.sceneWidth, this.sceneManager.sceneHeight);
+            this.background.drawRect(this.sceneManager.sceneWidth / -2, this.sceneManager.sceneHeight / -2, this.sceneManager.sceneWidth, this.sceneManager.sceneHeight);
+            this.background.x = this.sceneManager.sceneWidth / 2;
+            this.background.y = this.sceneManager.sceneHeight / 2;
             this.background.endFill();
         }
         
@@ -130,6 +132,8 @@ class MainMenuScreen extends Scene{
 class GameScreen extends Scene{
     constructor(sceneManager){
         super(sceneManager);
+        
+        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "BOW"], 1);
     }
     
     setup(){
@@ -144,13 +148,13 @@ class GameScreen extends Scene{
         
         this.swordButton = new UIButton(this.sceneManager.sceneWidth / 2 - 220, 120, 100, 100, "Sword\nUnit");
         this.swordButton.setAction(function(){
-            sceneManager.gameScene.spawnUnit("SWORD", -1);
+            sceneManager.gameScene.spawnUnit("SWORD", 1);
         });
         this.swordButton.stageButton(this);
         
         this.spearButton = new UIButton(this.sceneManager.sceneWidth / 2 - 110, 120, 100, 100, "Spear\nUnit");
         this.spearButton.setAction(function(){
-            sceneManager.gameScene.spawnUnit("SPEAR", -1);
+            sceneManager.gameScene.spawnUnit("SPEAR", 1);
         });
         this.spearButton.stageButton(this);
         
@@ -200,6 +204,7 @@ class GameScreen extends Scene{
         this.lane1.update(deltaTime);
         this.lane2.update(deltaTime);
         this.lane3.update(deltaTime);
+        this.enemyManager.update(deltaTime);
     }
     
     reset(){
@@ -232,15 +237,28 @@ class GameScreen extends Scene{
         }
     }
     
-    spawnUnit(unitType, direction){
+    getLane(laneNum = 4){
+        console.log(`Selected Lane: ${laneNum}`);
+        switch(laneNum){
+            case 1:
+                return this.lane1;
+            case 2:
+                return this.lane2;
+            case 3:
+                return this.lane3;
+        }
+        return this.selectedLane;
+    }
+    
+    spawnUnit(unitType, direction, lane = this.selectedLane){
         if(direction == 1){
-            if(this.selectedLane.sectionFull(0)){
-                return;
+            if(lane.sectionFull(0)){
+                return false;
             }
         }
         else{
-            if(this.selectedLane.sectionFull(this.selectedLane.length - 1)){
-                return;
+            if(lane.sectionFull(lane.laneLength - 1)){
+                return false;
             }
         }
         
@@ -249,24 +267,25 @@ class GameScreen extends Scene{
         switch(unitType){
             case "SWORD":
             default:
-                newUnit = new Unit(this.selectedLane, 75, 40, 0xFF0000, "SWORD", direction);
+                newUnit = new Unit(lane, 75, 40, 0xFF0000, "SWORD", direction);
                 break;
             case "SPEAR":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0x00FF00, "SPEAR", direction);
+                newUnit = new Unit(lane, 75, 40, 0x00FF00, "SPEAR", direction);
                 break;
             case "BOW":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0x0000FF, "BOW", direction);
+                newUnit = new Unit(lane, 75, 40, 0x0000FF, "BOW", direction);
                 break;
             case "FLYING":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0xFFFF00, "FLYING", direction);
+                newUnit = new Unit(lane, 75, 40, 0xFFFF00, "FLYING", direction);
                 break;
             case "SHIELD":
-                newUnit = new Unit(this.selectedLane, 75, 40, 0xDD00DD, "SHIELD", direction);
+                newUnit = new Unit(lane, 75, 40, 0xDD00DD, "SHIELD", direction);
                 break;
         }
         
-        this.selectedLane.units.push(newUnit);
+        lane.units.push(newUnit);
         newUnit.stageUnit(this);
+        return true;
     }
 }
 
@@ -325,9 +344,6 @@ class UIButton{
         this.pressedColor = pressedColor;
         
         this.drawBox();
-        
-        this.text.x = this.x - (this.text.width / 2);
-        this.text.y = this.y - (this.text.height / 2);
     }
     
     stageButton(stage){
@@ -337,7 +353,11 @@ class UIButton{
     
     drawBox(color = this.baseColor){
         this.box.beginFill(color);
-        this.box.drawRect(this.x - (this.width / 2), this.y - (this.height / 2), this.width, this.height);
+        this.box.drawRect(-(this.width / 2), -(this.height / 2), this.width, this.height);
+        this.box.x = this.x;
+        this.box.y = this.y;
+        this.text.x = this.x - (this.text.width / 2);
+        this.text.y = this.y - (this.text.height / 2);
         this.box.endFill();
     }
     
@@ -354,13 +374,13 @@ class UIButton{
 
 //Lane --------------------------------------------------------------------------------------
 class Lane extends UIButton{
-    constructor(x = 510, y = 384, length=10, height=100){
-        super(x, y, length * 100, height, "");
+    constructor(x = 510, y = 384,laneLength=10, height=100){
+        super(x, y,laneLength * 100, height, "");
         this.sectionLength = 100;
         
         this.selected = false;
-        this.length = length;
-        this.pixelLength = length * this.sectionLength;
+        this.laneLength =laneLength;
+        this.pixelLength =laneLength * this.sectionLength;
         this.units = [];
     }
     
@@ -382,7 +402,7 @@ class Lane extends UIButton{
     }
     
     sectionFull(index){
-        if(index >= this.length || index < 0){
+        if(index >= this.laneLength || index < 0){
             return true;
         }
         
