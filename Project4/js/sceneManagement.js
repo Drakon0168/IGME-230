@@ -20,11 +20,6 @@ class SceneManager{
         app.stage.addChild(this.upgradeScene);
         app.stage.addChild(this.gameOverScene);
         
-        this.menuScene.setup();
-        this.gameScene.setup();
-        this.upgradeScene.setup();
-        this.gameOverScene.setup();
-        
         this.currentScene = undefined;
         this.switchScene("MENU");
     }
@@ -75,6 +70,8 @@ class Scene extends PIXI.Container{
     constructor(sceneManager){
         super();
         this.sceneManager = sceneManager;
+        this.setup();
+        this.reset();
     }
     
     setup(backgroundImage = ""){
@@ -133,7 +130,8 @@ class GameScreen extends Scene{
     constructor(sceneManager){
         super(sceneManager);
         
-        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "BOW"], 1);
+        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "BOW"], 2.5);
+        this.reset();
     }
     
     setup(){
@@ -146,35 +144,44 @@ class GameScreen extends Scene{
         });
         this.pauseButton.stageButton(this);
         
-        this.swordButton = new UIButton(this.sceneManager.sceneWidth / 2 - 220, 120, 100, 100, "Sword\nUnit");
+        this.swordButton = new UIButton(this.sceneManager.sceneWidth / 2 - 220, 120, 100, 100, "Sword\nUnit\n20g");
         this.swordButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("SWORD", 1);
         });
         this.swordButton.stageButton(this);
         
-        this.spearButton = new UIButton(this.sceneManager.sceneWidth / 2 - 110, 120, 100, 100, "Spear\nUnit");
+        this.spearButton = new UIButton(this.sceneManager.sceneWidth / 2 - 110, 120, 100, 100, "Spear\nUnit\n25g");
         this.spearButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("SPEAR", 1);
         });
         this.spearButton.stageButton(this);
         
-        this.bowButton = new UIButton(this.sceneManager.sceneWidth / 2, 120, 100, 100, "Bow\nUnit");
+        this.bowButton = new UIButton(this.sceneManager.sceneWidth / 2, 120, 100, 100, "Bow\nUnit\n25g");
         this.bowButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("BOW", 1);
         });
         this.bowButton.stageButton(this);
         
-        this.flyingButton = new UIButton(this.sceneManager.sceneWidth / 2 + 110, 120, 100, 100, "Flying\nUnit");
+        this.flyingButton = new UIButton(this.sceneManager.sceneWidth / 2 + 110, 120, 100, 100, "Flying\nUnit\n15g");
         this.flyingButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("FLYING", 1);
         });
         this.flyingButton.stageButton(this);
         
-        this.shieldButton = new UIButton(this.sceneManager.sceneWidth / 2 + 220, 120, 100, 100, "Shield\nUnit");
+        this.shieldButton = new UIButton(this.sceneManager.sceneWidth / 2 + 220, 120, 100, 100, "Shield\nUnit\n35g");
         this.shieldButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("SHIELD", 1);
         });
         this.shieldButton.stageButton(this);
+        
+        //SetupLabels
+        this.healthLabel = new UIButton(this.sceneManager.sceneWidth / 2, 35, this.sceneManager.sceneWidth - 340, 50, "Health");
+        this.healthLabel.centered = false;
+        this.healthLabel.positionText();
+        this.healthLabel.stageButton(this);
+        
+        this.goldLabel = new UIButton(939, 35, 150, 50, "Gold: 100g");
+        this.goldLabel.stageButton(this);
         
         //Setup Lanes
         this.lane1 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 350, 10, 100);
@@ -205,12 +212,25 @@ class GameScreen extends Scene{
         this.lane2.update(deltaTime);
         this.lane3.update(deltaTime);
         this.enemyManager.update(deltaTime);
+        
+        
+        this.goldTimer += deltaTime;
+        if(this.goldTimer > 1){
+            this.gold += this.goldPerSecond;
+            this.goldTimer = 0;
+        }
+        
+        this.goldLabel.setText(`Gold: ${this.gold}g`);
     }
     
     reset(){
         this.lane1.resetLane();
         this.lane2.resetLane();
         this.lane3.resetLane();
+        
+        this.goldPerSecond = 5;
+        this.gold = 100;
+        this.goldTimer = 0;
     }
     
     switchLane(lane){
@@ -238,7 +258,6 @@ class GameScreen extends Scene{
     }
     
     getLane(laneNum = 4){
-        console.log(`Selected Lane: ${laneNum}`);
         switch(laneNum){
             case 1:
                 return this.lane1;
@@ -267,18 +286,58 @@ class GameScreen extends Scene{
         switch(unitType){
             case "SWORD":
             default:
+                if(direction == 1){
+                    if(this.gold < 20){
+                        return false;
+                    }
+                    
+                    this.gold -= 20;
+                }
+                
                 newUnit = new Unit(lane, 75, 40, 0xFF0000, "SWORD", direction);
                 break;
             case "SPEAR":
+                if(direction == 1){
+                    if(this.gold < 25){
+                        return false;
+                    }
+                    
+                    this.gold -= 25;
+                }
+                
                 newUnit = new Unit(lane, 75, 40, 0x00FF00, "SPEAR", direction);
                 break;
             case "BOW":
+                if(direction == 1){
+                    if(this.gold < 25){
+                        return false;
+                    }
+                    
+                    this.gold -= 25;
+                }
+                
                 newUnit = new Unit(lane, 75, 40, 0x0000FF, "BOW", direction);
                 break;
             case "FLYING":
+                if(direction == 1){
+                    if(this.gold < 15){
+                        return false;
+                    }
+                    
+                    this.gold -= 15;
+                }
+                
                 newUnit = new Unit(lane, 75, 40, 0xFFFF00, "FLYING", direction);
                 break;
             case "SHIELD":
+                if(direction == 1){
+                    if(this.gold < 35){
+                        return false;
+                    }
+                    
+                    this.gold -= 35;
+                }
+                
                 newUnit = new Unit(lane, 75, 40, 0xDD00DD, "SHIELD", direction);
                 break;
         }
@@ -331,7 +390,7 @@ class GameOverScreen extends Scene{
 
 //UI Button ---------------------------------------------------------------------------------
 class UIButton{
-    constructor(x = 0, y = 0, width = 100, height = 100, title = "", baseColor=0xFFFFFF, hoverColor=0xDDDDDD, pressedColor=0xAAAAAA){
+    constructor(x = 0, y = 0, width = 100, height = 100, title = "", baseColor=0xFFFFFF, hoverColor=0xDDDDDD, pressedColor=0xAAAAAA, centered = true){
         this.box = new PIXI.Graphics();
         this.text = new PIXI.Text(title);
         this.title = title;
@@ -342,6 +401,7 @@ class UIButton{
         this.baseColor = baseColor;
         this.hoverColor = hoverColor;
         this.pressedColor = pressedColor;
+        this.centered = true;
         
         this.drawBox();
     }
@@ -356,9 +416,25 @@ class UIButton{
         this.box.drawRect(-(this.width / 2), -(this.height / 2), this.width, this.height);
         this.box.x = this.x;
         this.box.y = this.y;
-        this.text.x = this.x - (this.text.width / 2);
-        this.text.y = this.y - (this.text.height / 2);
         this.box.endFill();
+        this.positionText();
+    }
+    
+    setText(value){
+        this.text.text = value;
+        this.positionText();
+    }
+    
+    positionText(){
+        this.text.y = this.y - (this.text.height / 2);
+        
+        if(this.centered){
+            this.text.x = this.x - (this.text.width / 2);
+        }
+        else{
+            let margin = (this.box.height - this.text.height) / 2;
+            this.text.x = (this.x - (this.box.width / 2)) + margin;
+        }
     }
     
     setAction(action){
@@ -420,6 +496,30 @@ class Lane extends UIButton{
     getSection(xValue){
         let currentSection = Math.floor((xValue - (this.x - (this.pixelLength / 2))) / this.sectionLength);
         return currentSection;
+    }
+    
+    getForwardUnit(unit){
+        let closestUnit = undefined;
+        let closestDistance = this.pixelLength;
+        
+        for(let i = 0; i < this.units.length; i++){
+            if(unit != this.units[i]){
+                let direction = this.units[i].x - unit.x;
+                if(direction * unit.direction > 0){
+                    if(Math.abs(direction) < closestDistance){
+                        closestDistance = direction;
+                        closestUnit = this.units[i];
+                    }
+                }
+            }
+        }
+        
+        if(closestUnit){
+            return closestUnit;
+        }
+        else{
+            return false;
+        }
     }
     
     resetLane(){

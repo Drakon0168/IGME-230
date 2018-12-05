@@ -6,7 +6,8 @@ class Unit{
         this.height = height;
         this.image = new PIXI.Graphics();
         this.healthBar = new PIXI.Graphics();
-        this.healthBarWidth = 100;
+        this.healthBarWidth = 75;
+        this.separationDistance = 45;
         this.lane = lane;
         this.x = lane.x + ((lane.pixelLength / 2) * direction*-1);
         this.y = lane.y - (this.height / 2);
@@ -23,14 +24,14 @@ class Unit{
                 this.speed = 100;
                 this.maxHealth = 100;
                 this.damage = 20;
-                this.attackSpeed = 1;
+                this.attackSpeed = 1.25;
                 this.attackRange = 50;
                 break;
             case "SPEAR":
                 this.speed = 75;
                 this.maxHealth = 100;
                 this.damage = 15;
-                this.attackSpeed = 1;
+                this.attackSpeed = 0.75;
                 this.attackRange = 100;
                 break;
             case "BOW":
@@ -43,7 +44,7 @@ class Unit{
             case "FLYING":
                 this.speed = 150;
                 this.maxHealth = 50;
-                this.damage = 30;
+                this.damage = 15;
                 this.attackSpeed = 1;
                 this.attackRange = 50;
                 break;
@@ -77,20 +78,24 @@ class Unit{
     update(deltaTime){
         this.attackTimer += deltaTime;
         let currentSection = this.lane.getSection(this.x);
-        let collidingUnit = this.lane.sectionFull(currentSection + this.direction);
-        if(collidingUnit){
-            if(collidingUnit.health != undefined && collidingUnit.direction != this.direction){
-                if(this.attackTimer > (1 / this.attackSpeed)){
-                    collidingUnit.health -= this.damage;
-                    this.attackTimer = 0;
-                    
-                    if(collidingUnit.type == "SHIELD"){
-                        console.log("Enemy Tank Health: " + collidingUnit.health);
+        let forwardUnit = this.lane.getForwardUnit(this);
+        if(forwardUnit){
+            let distance = (forwardUnit.x - this.x) * this.direction;
+            
+            if(forwardUnit.direction == this.direction){
+                if(distance > this.separationDistance){
+                    this.move(deltaTime);
+                }
+            }
+            else{
+                if(distance < this.attackRange + (this.width / 2) + (forwardUnit.width / 2)){
+                    if(this.attackTimer > 1 / this.attackSpeed){
+                        forwardUnit.health -= this.damage;
+                        this.attackTimer = 0;
                     }
-                    
-                    if(collidingUnit.health <= 0){
-                        collidingUnit.die();
-                    }
+                }
+                else{
+                    this.move(deltaTime);
                 }
             }
         }
@@ -100,6 +105,11 @@ class Unit{
         else{
             this.image.parent.sceneManager.switchScene("GAMEOVER");
             this.image.parent.reset();
+        }
+        
+        //Check for death
+        if(this.health <= 0){
+            this.die();
         }
         
         //Update Image Positions
@@ -148,7 +158,6 @@ class EnemyManager{
     
     spawnUnit(){
         let laneNum = Math.floor(Math.random() * 3) + 1;
-        console.log(laneNum);
         return this.gameScene.spawnUnit(this.enemyTypes[Math.floor(Math.random() * this.enemyTypes.length)], -1, this.gameScene.getLane(laneNum));
     }
 }
