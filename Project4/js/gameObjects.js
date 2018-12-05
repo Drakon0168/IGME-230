@@ -7,7 +7,7 @@ class Unit{
         this.image = new PIXI.Graphics();
         this.healthBar = new PIXI.Graphics();
         this.healthBarWidth = 75;
-        this.separationDistance = 45;
+        this.separationDistance = 85;
         this.lane = lane;
         this.x = lane.x + ((lane.pixelLength / 2) * direction*-1);
         this.y = lane.y - (this.height / 2);
