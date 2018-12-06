@@ -130,7 +130,7 @@ class GameScreen extends Scene{
     constructor(sceneManager){
         super(sceneManager);
         
-        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "BOW"], 2.5);
+        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "FLYING"], 2.5);
         this.reset();
     }
     
@@ -520,6 +520,24 @@ class Lane extends UIButton{
         else{
             return false;
         }
+    }
+    
+    getEnemies(unit){
+        let enemies = [];
+        
+        for(let i = 0; i < this.units.length; i++){
+            if(this.units[i].direction != unit.direction){
+                if(Math.abs(this.units[i].x - unit.x) <= unit.attackRange){
+                    enemies.push(this.units[i]);
+                }
+            }
+        }
+        
+        enemies.sort(function(a,b){
+            return Math.abs(a.x - unit.x) - Math.abs(b.x - unit.x);
+        });
+        
+        return enemies;
     }
     
     resetLane(){

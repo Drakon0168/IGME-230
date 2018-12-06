@@ -79,24 +79,32 @@ class Unit{
         this.attackTimer += deltaTime;
         let currentSection = this.lane.getSection(this.x);
         let forwardUnit = this.lane.getForwardUnit(this);
+        
         if(forwardUnit){
+            let enemies = this.lane.getEnemies(this);
             let distance = (forwardUnit.x - this.x) * this.direction;
+            let canMove = true;
             
-            if(forwardUnit.direction == this.direction){
-                if(distance > this.separationDistance){
-                    this.move(deltaTime);
-                }
-            }
-            else{
-                if(distance < this.attackRange + (this.width / 2) + (forwardUnit.width / 2)){
+            if(enemies.length > 0){
+                let enemyDistance = Math.abs(enemies[0].x - this.x);
+                if(enemyDistance < this.attackRange + (this.width / 2) + (enemies[0].width / 2)){
                     if(this.attackTimer > 1 / this.attackSpeed){
-                        forwardUnit.health -= this.damage;
+                        enemies[0].health -= this.damage;
                         this.attackTimer = 0;
                     }
+                    
+                    canMove = false;
                 }
-                else{
-                    this.move(deltaTime);
+            }
+            
+            if(forwardUnit.direction == this.direction){
+                if(distance <= this.separationDistance){
+                    canMove = false;
                 }
+            }
+            
+            if(canMove){
+                this.move(deltaTime);
             }
         }
         else if((currentSection > 1 && this.direction == -1) || (currentSection < this.lane.laneLength - 2 && this.direction == 1)){
@@ -107,19 +115,21 @@ class Unit{
             this.image.parent.reset();
         }
         
+        //Update healthbar
+        this.healthBar.scale.x = this.health / this.maxHealth;
+        
         //Check for death
         if(this.health <= 0){
             this.die();
         }
-        
-        //Update Image Positions
-        this.image.x = this.x;
-        this.healthBar.x = this.x;
-        this.healthBar.scale.x = this.health / this.maxHealth;
     }
     
     move(deltaTime){
         this.x += this.speed * this.direction * deltaTime;
+        
+        //Update Image Positions
+        this.image.x = this.x;
+        this.healthBar.x = this.x;
     }
     
     die(){
