@@ -118,6 +118,12 @@ class Unit{
                 this.move(deltaTime);
             }
         }
+        else{
+            if(this.attackTimer > 1 / this.attackSpeed){
+                this.image.parent.getCastle(this.direction).health -= this.damage;
+                this.attackTimer = 0;
+            }
+        }
         
         //Update healthbar
         this.healthBar.scale.x = this.health / this.maxHealth;
@@ -179,10 +185,48 @@ class EnemyManager{
 class Castle{
     constructor(direction, maxHealth=1000){
         this.health = maxHealth;
+        this.maxHealth = maxHealth;
+        this.direction = direction;
+        this.healthBar = new PIXI.Graphics();
+        
+        if(direction == 1){
+            this.x = 265;
+            this.y = 35;
+        }
+        else{
+            this.x = 265;
+            this.y = 733;
+        }
+        
+        this.drawHealthBar();
+    }
+    
+    drawHealthBar(){
+        this.healthBar.beginFill(0xFF0000);
+        this.healthBar.drawRect(0, -12, 575, 25);
+        this.healthBar.x = this.x;
+        this.healthBar.y = this.y;
+        this.healthBar.scale.x = this.health / this.maxHealth;
+        this.healthBar.endFill();
+    }
+    
+    update(deltaTime){
+        this.healthBar.scale.x = this.health / this.maxHealth;
+        if(this.health <= 0){
+            this.die();
+        }
+    }
+    
+    resetCastle(){
+        this.health = this.maxHealth;
+    }
+    
+    stageCastle(stage){
+        stage.addChild(this.healthBar);
     }
     
     die(){
-        this.image.parent.sceneManager.switchScene("GAMEOVER");
-        this.image.parent.reset();
+        this.healthBar.parent.sceneManager.switchScene("GAMEOVER");
+        this.healthBar.parent.reset();
     }
 }

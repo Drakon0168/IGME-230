@@ -180,6 +180,11 @@ class GameScreen extends Scene{
         this.healthLabel.positionText();
         this.healthLabel.stageButton(this);
         
+        this.enemyHealthLabel = new UIButton(this.sceneManager.sceneWidth / 2, 733, this.sceneManager.sceneWidth - 340, 50, "Enemy");
+        this.enemyHealthLabel.centered = false;
+        this.enemyHealthLabel.positionText();
+        this.enemyHealthLabel.stageButton(this);
+        
         this.goldLabel = new UIButton(939, 35, 150, 50, "Gold: 100g");
         this.goldLabel.stageButton(this);
         
@@ -207,7 +212,12 @@ class GameScreen extends Scene{
         
         this.switchLane(2);
 
-        //Setup Castle
+        //Setup Castles
+        this.friendlyCastle = new Castle(1, 1000);
+        this.friendlyCastle.stageCastle(this);
+        
+        this.enemyCastle = new Castle(-1, 1000);
+        this.enemyCastle.stageCastle(this);
     }
     
     update(deltaTime){
@@ -215,7 +225,8 @@ class GameScreen extends Scene{
         this.lane2.update(deltaTime);
         this.lane3.update(deltaTime);
         this.enemyManager.update(deltaTime);
-        
+        this.friendlyCastle.update(deltaTime);
+        this.enemyCastle.update(deltaTime);
         
         this.goldTimer += deltaTime;
         if(this.goldTimer > 1){
@@ -230,6 +241,8 @@ class GameScreen extends Scene{
         this.lane1.resetLane();
         this.lane2.resetLane();
         this.lane3.resetLane();
+        this.friendlyCastle.resetCastle();
+        this.enemyCastle.resetCastle();
         
         this.goldPerSecond = 5;
         this.gold = 100;
@@ -270,6 +283,15 @@ class GameScreen extends Scene{
                 return this.lane3;
         }
         return this.selectedLane;
+    }
+    
+    getCastle(direction){
+        if(direction == -1){
+            return this.friendlyCastle;
+        }
+        else{
+            return this.enemyCastle;
+        }
     }
     
     spawnUnit(unitType, direction, lane = this.selectedLane){
