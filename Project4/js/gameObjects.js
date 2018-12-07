@@ -32,7 +32,7 @@ class Unit{
                 this.maxHealth = 100;
                 this.damage = 15;
                 this.attackSpeed = 0.75;
-                this.attackRange = 100;
+                this.attackRange = 150;
                 break;
             case "BOW":
                 this.speed = 75;
@@ -50,7 +50,7 @@ class Unit{
                 break;
             case "SHIELD":
                 this.speed = 50;
-                this.maxHealth = 150;
+                this.maxHealth = 175;
                 this.damage = 25;
                 this.attackSpeed = 0.5;
                 this.attackRange = 50;
@@ -79,17 +79,26 @@ class Unit{
         this.attackTimer += deltaTime;
         let currentSection = this.lane.getSection(this.x);
         let forwardUnit = this.lane.getForwardUnit(this);
+        let canMove = true;
         
         if(forwardUnit){
             let enemies = this.lane.getEnemies(this);
-            let distance = (forwardUnit.x - this.x) * this.direction;
-            let canMove = true;
+            let distance = Math.abs(forwardUnit.x - this.x);
             
             if(enemies.length > 0){
                 let enemyDistance = Math.abs(enemies[0].x - this.x);
                 if(enemyDistance < this.attackRange + (this.width / 2) + (enemies[0].width / 2)){
                     if(this.attackTimer > 1 / this.attackSpeed){
                         enemies[0].health -= this.damage;
+                        
+                        if(this.type == "SPEAR"){
+                            for(let i = 1; i < enemies.length; i++){
+                                if(Math.abs(enemies[i].x - this.x) <= this.attackRange){
+                                    enemies[i].health -= this.damage;
+                                }
+                            }
+                        }
+                        
                         this.attackTimer = 0;
                     }
                     
@@ -102,17 +111,12 @@ class Unit{
                     canMove = false;
                 }
             }
-            
+        }
+        
+        if((currentSection > 1 && this.direction == -1) || (currentSection < this.lane.laneLength - 2 && this.direction == 1)){
             if(canMove){
                 this.move(deltaTime);
             }
-        }
-        else if((currentSection > 1 && this.direction == -1) || (currentSection < this.lane.laneLength - 2 && this.direction == 1)){
-            this.move(deltaTime);
-        }
-        else{
-            this.image.parent.sceneManager.switchScene("GAMEOVER");
-            this.image.parent.reset();
         }
         
         //Update healthbar
@@ -169,5 +173,16 @@ class EnemyManager{
     spawnUnit(){
         let laneNum = Math.floor(Math.random() * 3) + 1;
         return this.gameScene.spawnUnit(this.enemyTypes[Math.floor(Math.random() * this.enemyTypes.length)], -1, this.gameScene.getLane(laneNum));
+    }
+}
+
+class Castle{
+    constructor(direction, maxHealth=1000){
+        this.health = maxHealth;
+    }
+    
+    die(){
+        this.image.parent.sceneManager.switchScene("GAMEOVER");
+        this.image.parent.reset();
     }
 }

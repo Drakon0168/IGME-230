@@ -502,15 +502,15 @@ class Lane extends UIButton{
     }
     
     getForwardUnit(unit){
-        let closestUnit = undefined;
+        let closestUnit = false;
         let closestDistance = this.pixelLength;
         
         for(let i = 0; i < this.units.length; i++){
             if(unit != this.units[i]){
-                let direction = this.units[i].x - unit.x;
-                if(direction * unit.direction > 0){
-                    if(Math.abs(direction) < closestDistance){
-                        closestDistance = direction;
+                let distance = this.units[i].x - unit.x;
+                if(distance * unit.direction > 0){
+                    if(Math.abs(distance) < Math.abs(closestDistance)){
+                        closestDistance = distance;
                         closestUnit = this.units[i];
                     }
                 }
