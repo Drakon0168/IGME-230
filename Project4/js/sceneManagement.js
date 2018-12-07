@@ -144,31 +144,31 @@ class GameScreen extends Scene{
         });
         this.pauseButton.stageButton(this);
         
-        this.swordButton = new UIButton(this.sceneManager.sceneWidth / 2 - 220, 120, 100, 100, "Sword\nUnit\n20g");
+        this.swordButton = new UIButton(90, 120, 160, 100, "Sword\nUnit\n20g");
         this.swordButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("SWORD", 1);
         });
         this.swordButton.stageButton(this);
         
-        this.spearButton = new UIButton(this.sceneManager.sceneWidth / 2 - 110, 120, 100, 100, "Spear\nUnit\n25g");
+        this.spearButton = new UIButton(260, 120, 160, 100, "Spear\nUnit\n25g");
         this.spearButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("SPEAR", 1);
         });
         this.spearButton.stageButton(this);
         
-        this.bowButton = new UIButton(this.sceneManager.sceneWidth / 2, 120, 100, 100, "Bow\nUnit\n25g");
+        this.bowButton = new UIButton(430, 120, 160, 100, "Bow\nUnit\n25g");
         this.bowButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("BOW", 1);
         });
         this.bowButton.stageButton(this);
         
-        this.flyingButton = new UIButton(this.sceneManager.sceneWidth / 2 + 110, 120, 100, 100, "Flying\nUnit\n15g");
+        this.flyingButton = new UIButton(600, 120, 160, 100, "Flying\nUnit\n15g");
         this.flyingButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("FLYING", 1);
         });
         this.flyingButton.stageButton(this);
         
-        this.shieldButton = new UIButton(this.sceneManager.sceneWidth / 2 + 220, 120, 100, 100, "Shield\nUnit\n35g");
+        this.shieldButton = new UIButton(770, 120, 160, 100, "Shield\nUnit\n35g");
         this.shieldButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("SHIELD", 1);
         });
@@ -182,6 +182,9 @@ class GameScreen extends Scene{
         
         this.goldLabel = new UIButton(939, 35, 150, 50, "Gold: 100g");
         this.goldLabel.stageButton(this);
+        
+        this.goldPerSecondLabel = new UIButton(939, 120, 150, 100,"Gold Per\nSecond\n5");
+        this.goldPerSecondLabel.stageButton(this);
         
         //Setup Lanes
         this.lane1 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 350, 10, 100);
