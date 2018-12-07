@@ -226,6 +226,13 @@ class Castle{
     }
     
     die(){
+        if(this.direction == 1){
+            this.healthBar.parent.sceneManager.gameOverScene.message.setText("You Lose!");
+        }
+        else{
+            this.healthBar.parent.sceneManager.gameOverScene.message.setText("You Win!");
+        }
+        
         this.healthBar.parent.sceneManager.switchScene("GAMEOVER");
         this.healthBar.parent.reset();
     }

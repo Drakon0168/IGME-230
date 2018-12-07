@@ -130,7 +130,7 @@ class GameScreen extends Scene{
     constructor(sceneManager){
         super(sceneManager);
         
-        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "FLYING"], 2.5);
+        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "FLYING"], 10);
         this.reset();
     }
     
@@ -398,6 +398,9 @@ class GameOverScreen extends Scene{
     
     setup(){
         super.setup();
+        
+        this.message = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) - 100, 300, 100, "Game Over");
+        this.message.stageButton(this);
         
         this.playAgainButton = new UIButton(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight / 2, 200, 50, "Play Again");
         this.playAgainButton.setAction(function(){
