@@ -130,7 +130,7 @@ class GameScreen extends Scene{
     constructor(sceneManager){
         super(sceneManager);
         
-        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "FLYING"], 10);
+        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "FLYING"], 2.5);
         this.reset();
     }
     
