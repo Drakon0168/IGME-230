@@ -502,7 +502,7 @@ class Lane extends UIButton{
             this.units[i].update(deltaTime);
         }
         
-        this.units = this.units.filter(u=>u.alive)
+        this.units = this.units.filter(u=>u.alive);
     }
     
     sectionFull(index){
@@ -569,26 +569,10 @@ class Lane extends UIButton{
     }
     
     resetLane(){
-        
         for(let i = 0; i < this.units.length; i++){
             this.units[i].unstageUnit();
         }
         
         this.units = [];
-    }
-}
-
-class Camera{
-    constructor(){
-        this.xOffset = 0;
-        this.scrollSpeed = 100;
-    }
-    
-    static getOffset(){
-        return this.xOffset;
-    }
-    
-    static Scroll(direction){
-        this.xOffset += this.scrollSpeed * direction * SceneManager.getDeltaTime();
     }
 }
