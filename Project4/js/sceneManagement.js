@@ -76,20 +76,21 @@ class Scene extends PIXI.Container{
     
     setup(backgroundImage = ""){
         if(backgroundImage != ""){
-            this.background = new PIXI.Sprite(PIXI.loader.resources[`images/${backgroundImage}`].texture);
+            this.background = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/${backgroundImage}`));
             this.background.anchor.set(0.5,0.5);
-            this.background.scale.set(1024,768);
-            this.background.width = this.sceneManager.sceneWidth / 2;
-            this.background.height = this.sceneManager.sceneHeight / 2;
+            this.background.scale.set(1,1);
+            //this.background.width = this.sceneManager.sceneWidth / 2;
+            //this.background.height = this.sceneManager.sceneHeight / 2;
         }
         else{
             this.background = new PIXI.Graphics();
             this.background.beginFill(0xAAAAAA);
             this.background.drawRect(this.sceneManager.sceneWidth / -2, this.sceneManager.sceneHeight / -2, this.sceneManager.sceneWidth, this.sceneManager.sceneHeight);
-            this.background.x = this.sceneManager.sceneWidth / 2;
-            this.background.y = this.sceneManager.sceneHeight / 2;
             this.background.endFill();
         }
+        
+        this.background.x = this.sceneManager.sceneWidth / 2;
+        this.background.y = this.sceneManager.sceneHeight / 2;
         
         this.addChild(this.background);
     }
