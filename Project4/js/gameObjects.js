@@ -4,7 +4,6 @@ class Unit{
         this.direction = direction;
         this.width = width;
         this.height = height;
-        this.image = new PIXI.Graphics();
         this.healthBar = new PIXI.Graphics();
         this.healthBarWidth = 75;
         this.separationDistance = 85;
@@ -26,6 +25,7 @@ class Unit{
                 this.damage = 20;
                 this.attackSpeed = 1.25;
                 this.attackRange = 50;
+                this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/SwordUnit.png`));
                 break;
             case "SPEAR":
                 this.speed = 75;
@@ -33,6 +33,7 @@ class Unit{
                 this.damage = 15;
                 this.attackSpeed = 0.75;
                 this.attackRange = 150;
+                this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/SpearUnit.png`));
                 break;
             case "BOW":
                 this.speed = 75;
@@ -40,6 +41,7 @@ class Unit{
                 this.damage = 10;
                 this.attackSpeed = 1;
                 this.attackRange = 300;
+                this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/BowUnit.png`));
                 break;
             case "FLYING":
                 this.speed = 150;
@@ -47,6 +49,7 @@ class Unit{
                 this.damage = 15;
                 this.attackSpeed = 1;
                 this.attackRange = 50;
+                this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/FastUnit.png`));
                 break;
             case "SHIELD":
                 this.speed = 50;
@@ -54,18 +57,22 @@ class Unit{
                 this.damage = 25;
                 this.attackSpeed = 0.5;
                 this.attackRange = 50;
+                this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/ShieldUnit.png`));
                 break;
+        }
+        
+        this.image.anchor.set(0.5,0.5);
+        
+        if(direction == -1){
+            this.image.scale.set(-1,1);
         }
         
         this.health = this.maxHealth;
     }
     
     drawSelf(){
-        this.image.beginFill(this.color);
-        this.image.drawRect(-(this.width / 2), -(this.height / 2), this.width, this.height);
         this.image.x = this.x;
         this.image.y = this.y;
-        this.image.endFill();
         
         this.healthBar.beginFill(0xFF0000);
         this.healthBar.drawRect(-(this.healthBarWidth / 2), -(this.height), this.healthBarWidth, 10);
@@ -214,6 +221,10 @@ class Castle{
         this.healthBar.scale.x = this.health / this.maxHealth;
         if(this.health <= 0){
             this.die();
+        }
+        
+        if(this.health > this.maxHealth){
+            this.health = this.maxHealth;
         }
     }
     

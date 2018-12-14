@@ -79,8 +79,6 @@ class Scene extends PIXI.Container{
             this.background = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/${backgroundImage}`));
             this.background.anchor.set(0.5,0.5);
             this.background.scale.set(1,1);
-            //this.background.width = this.sceneManager.sceneWidth / 2;
-            //this.background.height = this.sceneManager.sceneHeight / 2;
         }
         else{
             this.background = new PIXI.Graphics();
@@ -116,9 +114,9 @@ class MainMenuScreen extends Scene{
     }
     
     setup(){
-        super.setup();
+        super.setup("TitleScreen.png");
         
-        this.playButton = new UIButton(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight / 2, 200, 50, "Play");
+        this.playButton = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 150, 150, 50, "Play");
         this.playButton.setAction(function(){
             sceneManager.switchScene("GAME");
         });
@@ -131,12 +129,12 @@ class GameScreen extends Scene{
     constructor(sceneManager){
         super(sceneManager);
         
-        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "FLYING"], 2.5);
+        this.enemyManager = new EnemyManager(this, ["SWORD", "SPEAR", "BOW", "FLYING", "SHIELD"], 2.5);
         this.reset();
     }
     
     setup(){
-        super.setup();
+        super.setup("GameScreen.png");
         
         //Setup Buttons
         this.pauseButton = new UIButton(85, 35, 150, 50, "Upgrade");
@@ -197,18 +195,21 @@ class GameScreen extends Scene{
         this.lane1.setAction(function(){
             sceneManager.gameScene.switchLane(1);
         });
+        this.lane1.drawLane();
         this.lane1.stageButton(this);
         
         this.lane2 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 240, 10, 100);
         this.lane2.setAction(function(){
             sceneManager.gameScene.switchLane(2);
         });
+        this.lane2.drawLane();
         this.lane2.stageButton(this);
         
         this.lane3 = new Lane(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight - 130, 10, 100);
         this.lane3.setAction(function(){
             sceneManager.gameScene.switchLane(3);
         });
+        this.lane3.drawLane();
         this.lane3.stageButton(this);
         
         this.switchLane(2);
@@ -236,6 +237,7 @@ class GameScreen extends Scene{
         }
         
         this.goldLabel.setText(`Gold: ${this.gold}g`);
+        this.goldPerSecondLabel.setText(`Gold Per\nSecond\n${this.goldPerSecond}`);
     }
     
     reset(){
@@ -248,6 +250,38 @@ class GameScreen extends Scene{
         this.goldPerSecond = 5;
         this.gold = 100;
         this.goldTimer = 0;
+        
+        this.armyLevel = 2;
+        this.bowButton.drawBox(this.bowButton.pressedColor);
+        this.flyingButton.drawBox(this.flyingButton.pressedColor);
+        this.shieldButton.drawBox(this.shieldButton.pressedColor);
+    }
+    
+    upgradeArmy(){
+        if(this.armyLevel < 5){
+            this.armyLevel++;
+        }
+        
+        if(this.armyLevel >= 3){
+            this.bowButton.drawBox(this.bowButton.baseColor);
+        }
+        else{
+            this.bowButton.drawBox(this.bowButton.pressedColor);
+        }
+        
+        if(this.armyLevel >= 4){
+            this.flyingButton.drawBox(this.flyingButton.baseColor);
+        }
+        else{
+            this.flyingButton.drawBox(this.flyingButton.pressedColor);
+        }
+        
+        if(this.armyLevel >= 5){
+            this.shieldButton.drawBox(this.shieldButton.baseColor);
+        }
+        else{
+            this.shieldButton.drawBox(this.shieldButton.pressedColor);
+        }
     }
     
     switchLane(lane){
@@ -335,6 +369,10 @@ class GameScreen extends Scene{
                 break;
             case "BOW":
                 if(direction == 1){
+                    if(this.armyLevel < 3){
+                        return false;
+                    }
+                    
                     if(this.gold < 25){
                         return false;
                     }
@@ -346,6 +384,10 @@ class GameScreen extends Scene{
                 break;
             case "FLYING":
                 if(direction == 1){
+                    if(this.armyLevel < 4){
+                        return false;
+                    }
+                    
                     if(this.gold < 15){
                         return false;
                     }
@@ -357,6 +399,10 @@ class GameScreen extends Scene{
                 break;
             case "SHIELD":
                 if(direction == 1){
+                    if(this.armyLevel < 5){
+                        return false;
+                    }
+                    
                     if(this.gold < 35){
                         return false;
                     }
@@ -383,11 +429,71 @@ class UpgradeScreen extends Scene{
     setup(){
         super.setup("UpgradeScreen.png");
         
+        //Setup Buttons
         this.returnButton = new UIButton(this.sceneManager.sceneWidth / 2, 35, 200, 50, "Return");
         this.returnButton.setAction(function(){
             sceneManager.switchScene("GAME");
         });
         this.returnButton.stageButton(this);
+        
+        this.castleButton = new UIButton(500, 200, 250, 50, "Repair Castle 50g");
+        this.castleButton.setAction(function(){
+            if(sceneManager.gameScene.gold >= 50){
+                sceneManager.gameScene.gold -= 50;
+            }
+            else{
+                return;
+            }
+            
+            sceneManager.gameScene.friendlyCastle.health += 50;
+        });
+        this.castleButton.stageButton(this);
+        
+        this.goldButton = new UIButton(550, 375, 250, 50, "Upgrade Mines 75g");
+        this.goldButton.setAction(function(){
+            if(sceneManager.gameScene.gold >= 75){
+                sceneManager.gameScene.gold -= 75;
+            }
+            else{
+                return;
+            }
+            
+            sceneManager.gameScene.goldPerSecond += 5;
+        });
+        this.goldButton.stageButton(this);
+        
+        this.armyButton = new UIButton(800, 500, 250, 50, "Upgrade Army 50g");
+        this.armyButton.setAction(function(){
+            if(sceneManager.gameScene.armyLevel >= 5){
+                return;
+            }
+            
+            if(sceneManager.gameScene.gold >= 50){
+                sceneManager.gameScene.gold -= 50;
+            }
+            else{
+                return;
+            }
+            
+            sceneManager.gameScene.upgradeArmy();
+        });
+        this.armyButton.stageButton(this);
+        
+        //Setup Labels
+        this.goldLabel = new UIButton(939, 35, 150, 50, "Gold: 100g");
+        this.goldLabel.stageButton(this);
+        
+        this.goldPerSecondLabel = new UIButton(939, 120, 150, 100,"Gold Per\nSecond\n5");
+        this.goldPerSecondLabel.stageButton(this);
+        
+        this.healthLabel = new UIButton(939, 220, 150, 75, "Health\n1000/1000");
+        this.healthLabel.stageButton(this);
+    }
+    
+    update(){
+        this.goldLabel.setText(`Gold: ${sceneManager.gameScene.gold}g`);
+        this.goldPerSecondLabel.setText(`Gold Per\nSecond\n${sceneManager.gameScene.goldPerSecond}`);
+        this.healthLabel.setText(`Health\n${sceneManager.gameScene.friendlyCastle.health}/${sceneManager.gameScene.friendlyCastle.maxHealth}`);
     }
 }
 
@@ -398,7 +504,7 @@ class GameOverScreen extends Scene{
     }
     
     setup(){
-        super.setup();
+        super.setup("TitleScreen.png");
         
         this.message = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) - 100, 300, 100, "Game Over");
         this.message.stageButton(this);
@@ -431,7 +537,6 @@ class UIButton{
         this.hoverColor = hoverColor;
         this.pressedColor = pressedColor;
         this.centered = true;
-        
         this.drawBox();
     }
     
@@ -489,12 +594,20 @@ class Lane extends UIButton{
         this.units = [];
     }
     
+    drawLane(color = this.baseColor){
+        this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/Lane.png`));
+        this.image.anchor.set(0.5,0.5);
+        this.image.scale.set(1,1);
+        this.image.x = this.x;
+        this.image.y = this.y;
+    }
+    
     select(value){
         if(value){
-            super.drawBox(this.hoverColor);
+            this.image.tint = this.hoverColor;
         }
         else{
-            super.drawBox(this.baseColor);
+            this.image.tint = this.baseColor;
         }
     }
     
@@ -549,6 +662,12 @@ class Lane extends UIButton{
         else{
             return false;
         }
+    }
+    
+    stageButton(stage){
+        stage.addChild(this.box);
+        stage.addChild(this.text);
+        stage.addChild(this.image);
     }
     
     getEnemies(unit){
