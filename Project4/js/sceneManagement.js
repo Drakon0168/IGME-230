@@ -161,7 +161,7 @@ class GameScreen extends Scene{
         });
         this.bowButton.stageButton(this);
         
-        this.flyingButton = new UIButton(600, 120, 160, 100, "Flying\nUnit\n15g");
+        this.flyingButton = new UIButton(600, 120, 160, 100, "Fast\nUnit\n15g");
         this.flyingButton.setAction(function(){
             sceneManager.gameScene.spawnUnit("FLYING", 1);
         });
@@ -438,7 +438,7 @@ class UpgradeScreen extends Scene{
         
         this.castleButton = new UIButton(500, 200, 250, 50, "Repair Castle 50g");
         this.castleButton.setAction(function(){
-            if(sceneManager.gameScene.gold >= 50){
+            if(sceneManager.gameScene.gold >= 50 && sceneManager.gameScene.friendlyCastle.health < sceneManager.gameScene.friendlyCastle.maxHealth){
                 sceneManager.gameScene.gold -= 50;
             }
             else{
@@ -446,6 +446,10 @@ class UpgradeScreen extends Scene{
             }
             
             sceneManager.gameScene.friendlyCastle.health += 50;
+            
+            if(sceneManager.gameScene.friendlyCastle.health > sceneManager.gameScene.friendlyCastle.maxHealth){
+                sceneManager.gameScene.friendlyCastle.health = sceneManager.gameScene.friendlyCastle.maxHealth
+            }
         });
         this.castleButton.stageButton(this);
         

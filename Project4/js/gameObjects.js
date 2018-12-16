@@ -15,8 +15,6 @@ class Unit{
         this.attackTimer = 0;
         this.alive = true;
         
-        this.drawSelf();
-        
         switch(type){
             case "SWORD":
             default:
@@ -66,6 +64,8 @@ class Unit{
         if(direction == -1){
             this.image.scale.set(-1,1);
         }
+        
+        this.drawSelf();
         
         this.health = this.maxHealth;
     }
