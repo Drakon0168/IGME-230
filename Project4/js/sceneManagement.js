@@ -1,6 +1,7 @@
 "use strict";
 //Scene Manager -----------------------------------------------------------------------------
 class SceneManager{
+    //Sets up the initial game
     constructor(stage){
         this.sceneWidth = app.view.width;
         this.sceneHeight = app.view.height;
@@ -10,20 +11,24 @@ class SceneManager{
         this.gameScene = new GameScreen(this);
         this.upgradeScene = new UpgradeScreen(this);
         this.gameOverScene = new GameOverScreen(this);
+        this.instructionsScene = new InstructionsScene(this);
         
         this.gameScene.visible = false;
         this.upgradeScene.visible = false;
         this.gameOverScene.visible = false;
+        this.instructionsScene.visible = false;
         
         app.stage.addChild(this.menuScene);
         app.stage.addChild(this.gameScene);
         app.stage.addChild(this.upgradeScene);
         app.stage.addChild(this.gameOverScene);
+        app.stage.addChild(this.instructionsScene);
         
         this.currentScene = undefined;
         this.switchScene("MENU");
     }
     
+    //Switches between screens
     switchScene(sceneName){
         switch(sceneName){
             case "MENU":
@@ -33,6 +38,7 @@ class SceneManager{
                 this.gameScene.visible = false;
                 this.upgradeScene.visible = false;
                 this.gameOverScene.visible = false;
+                this.instructionsScene.visible = false;
                 break;
             case "GAME":
                 this.currentScene = this.gameScene;
@@ -40,6 +46,7 @@ class SceneManager{
                 this.gameScene.visible = true;
                 this.upgradeScene.visible = false;
                 this.gameOverScene.visible = false;
+                this.instructionsScene.visible = false;
                 break;
             case "UPGRADE":
                 this.currentScene = this.upgradeScene;
@@ -47,6 +54,7 @@ class SceneManager{
                 this.gameScene.visible = false;
                 this.upgradeScene.visible = true;
                 this.gameOverScene.visible = false;
+                this.instructionsScene.visible = false;
                 break;
             case "GAMEOVER":
                 this.currentScene = this.gameOverScene;
@@ -54,10 +62,20 @@ class SceneManager{
                 this.gameScene.visible = false;
                 this.upgradeScene.visible = false;
                 this.gameOverScene.visible = true;
+                this.instructionsScene.visible = false;
+                break;
+            case "INSTRUCTIONS":
+                this.currentScene = this.instructionsScene;
+                this.menuScene.visible = false;
+                this.gameScene.visible = false;
+                this.upgradeScene.visible = false;
+                this.gameOverScene.visible = false;
+                this.instructionsScene.visible = true;
                 break;
         }
     }
     
+    //Updates the current screen
     update(deltaTime){
         this.deltaTime = deltaTime;
         
@@ -74,6 +92,7 @@ class Scene extends PIXI.Container{
         this.reset();
     }
     
+    //Sets the background image
     setup(backgroundImage = ""){
         if(backgroundImage != ""){
             this.background = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/${backgroundImage}`));
@@ -93,14 +112,17 @@ class Scene extends PIXI.Container{
         this.addChild(this.background);
     }
     
+    //Does any resetting that the screen might need
     reset(){
         
     }
     
+    //Updates any objects that may need to be updated
     update(deltaTime){
         
     }
     
+    //Centers text on a position
     centerText(text, x = text.x, y = text.y){
         text.x = x + text.width / 2;
         text.y = y + text.height / 2;
@@ -113,14 +135,21 @@ class MainMenuScreen extends Scene{
         super(sceneManager);
     }
     
+    //Sets up all of the buttons and labels on the screen
     setup(){
         super.setup("TitleScreen.png");
         
-        this.playButton = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 150, 150, 50, "Play");
+        this.playButton = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 150, 200, 50, "Play");
         this.playButton.setAction(function(){
             sceneManager.switchScene("GAME");
         });
         this.playButton.stageButton(this);
+        
+        this.instructionsButton = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 210, 200, 50, "Instructions");
+        this.instructionsButton.setAction(function(){
+            sceneManager.switchScene("INSTRUCTIONS");
+        });
+        this.instructionsButton.stageButton(this);
     }
 }
 
@@ -133,6 +162,7 @@ class GameScreen extends Scene{
         this.reset();
     }
     
+    //Sets up all of the buttons and labels on the screen
     setup(){
         super.setup("GameScreen.png");
         
@@ -222,6 +252,7 @@ class GameScreen extends Scene{
         this.enemyCastle.stageCastle(this);
     }
     
+    // Updates all of the lanes and castles as well as the enemy manager, stats, and labels
     update(deltaTime){
         this.lane1.update(deltaTime);
         this.lane2.update(deltaTime);
@@ -240,6 +271,7 @@ class GameScreen extends Scene{
         this.goldPerSecondLabel.setText(`Gold Per\nSecond\n${this.goldPerSecond}`);
     }
     
+    //resets all of the lanes and stats back to their default values
     reset(){
         this.lane1.resetLane();
         this.lane2.resetLane();
@@ -257,6 +289,7 @@ class GameScreen extends Scene{
         this.shieldButton.drawBox(this.shieldButton.pressedColor);
     }
     
+    //increments the army level unlocking units accordingly
     upgradeArmy(){
         if(this.armyLevel < 5){
             this.armyLevel++;
@@ -284,6 +317,7 @@ class GameScreen extends Scene{
         }
     }
     
+    //selects the specified lane
     switchLane(lane){
         switch(lane){
             case 1:
@@ -308,6 +342,8 @@ class GameScreen extends Scene{
         }
     }
     
+    //returns the lane corresponding to the given number, if the number is out of range
+    // it will return the selected lane
     getLane(laneNum = 4){
         switch(laneNum){
             case 1:
@@ -317,9 +353,13 @@ class GameScreen extends Scene{
             case 3:
                 return this.lane3;
         }
+        
         return this.selectedLane;
     }
     
+    //returns the castle belonging to the opposite team of the given direction
+    // -1 will return the player's castle
+    //  1 will return the enemy's castle
     getCastle(direction){
         if(direction == -1){
             return this.friendlyCastle;
@@ -329,6 +369,8 @@ class GameScreen extends Scene{
         }
     }
     
+    //spawns a unit on the specified lane moving in the given direction, if the
+    //player purchased the unit it also decrements their gold
     spawnUnit(unitType, direction, lane = this.selectedLane){
         if(direction == 1){
             if(lane.sectionFull(0)){
@@ -426,6 +468,7 @@ class UpgradeScreen extends Scene{
         super(sceneManager);
     }
     
+    //Sets up all of the buttons and labels on the screen
     setup(){
         super.setup("UpgradeScreen.png");
         
@@ -492,12 +535,21 @@ class UpgradeScreen extends Scene{
         
         this.healthLabel = new UIButton(939, 220, 150, 75, "Health\n1000/1000");
         this.healthLabel.stageButton(this);
+        
+        this.armyLabel = new UIButton(939, 305, 150, 75, "Army Level\n2/5");
+        this.armyLabel.stageButton(this);
+        
+        this.instructionsLabel = new UIButton(310, this.sceneManager.sceneHeight - 72, 600, 125);
+        this.instructionsLabel.setText("Repair Castle: Heals 50 damage.\nUpgrade Mines: Increases gold per second by 5.\nUpgrade Army: Unlocks new Unit types.");
+        this.instructionsLabel.stageButton(this);
     }
     
+    //updates all of the label values to reflect purchased upgrades
     update(){
         this.goldLabel.setText(`Gold: ${sceneManager.gameScene.gold}g`);
         this.goldPerSecondLabel.setText(`Gold Per\nSecond\n${sceneManager.gameScene.goldPerSecond}`);
         this.healthLabel.setText(`Health\n${sceneManager.gameScene.friendlyCastle.health}/${sceneManager.gameScene.friendlyCastle.maxHealth}`);
+        this.armyLabel.setText(`Army Level\n${sceneManager.gameScene.armyLevel}/5`);
     }
 }
 
@@ -507,23 +559,54 @@ class GameOverScreen extends Scene{
         super(sceneManager);
     }
     
+    //Sets up all of the buttons and labels on the screen
     setup(){
         super.setup("TitleScreen.png");
         
         this.message = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) - 100, 300, 100, "Game Over");
         this.message.stageButton(this);
         
-        this.playAgainButton = new UIButton(this.sceneManager.sceneWidth / 2, this.sceneManager.sceneHeight / 2, 200, 50, "Play Again");
+        this.playAgainButton = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 150, 200, 50, "Play Again");
         this.playAgainButton.setAction(function(){
             sceneManager.switchScene("GAME");
         });
         this.playAgainButton.stageButton(this);
         
-        this.menuButton = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 60, 200, 50, "Main Menu");
+        this.menuButton = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 210, 200, 50, "Main Menu");
         this.menuButton.setAction(function(){
             sceneManager.switchScene("MENU");
         });
         this.menuButton.stageButton(this);
+    }
+}
+
+//Instructions Scene-------------------------------------------------------------------------
+class InstructionsScene extends Scene{
+    constructor(sceneManager){
+        super(sceneManager);
+    }
+    
+    //Sets up all of the buttons and labels on the screen
+    setup(){
+        super.setup("InstructionsScreen.png");
+        
+        this.menuButton = new UIButton(this.sceneManager.sceneWidth / 2, 35, 200, 50, "Main Menu");
+        this.menuButton.setAction(function(){
+            sceneManager.switchScene("MENU");
+        });
+        this.menuButton.stageButton(this);
+        
+        this.playButton = new UIButton(this.sceneManager.sceneWidth / 2, 95, 200, 50, "Play");
+        this.playButton.setAction(function(){
+            sceneManager.switchScene("GAME");
+        });
+        this.playButton.stageButton(this);
+        
+        this.instructionsLabel = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 100, 800, 300);
+        this.instructionsLabel.setText("Your Goal: Send your units down the lanes to the enemy's side\nto hurt them while preventing their units from getting to your side.\n" + 
+                                      "\nControls: Click the lanes to select them, then click the buttons\nat the top of the screen to send your units down the selected lane.\n" +
+                                      "\nClick the upgrade button to access the upgrade screen and use\nyour gold to provide various bonuses to your army and castle.");
+        this.instructionsLabel.stageButton(this);
     }
 }
 
@@ -541,14 +624,17 @@ class UIButton{
         this.hoverColor = hoverColor;
         this.pressedColor = pressedColor;
         this.centered = true;
-        this.drawBox();
+        
+        this.drawBox(hoverColor);
     }
     
+    //stages all of the components of the button
     stageButton(stage){
         stage.addChild(this.box);
         stage.addChild(this.text);
     }
     
+    //draws the button and the text on top of it
     drawBox(color = this.baseColor){
         this.box.beginFill(color);
         this.box.drawRect(-(this.width / 2), -(this.height / 2), this.width, this.height);
@@ -558,11 +644,13 @@ class UIButton{
         this.positionText();
     }
     
+    //Sets the text of the button and positions it
     setText(value){
         this.text.text = value;
         this.positionText();
     }
     
+    //positions the text either centered or left aligned
     positionText(){
         this.text.y = this.y - (this.text.height / 2);
         
@@ -575,6 +663,8 @@ class UIButton{
         }
     }
     
+    //Sets what happens when the button is clicked also changes the color to show that it 
+    //is clickable and allows the mouse to recognize that it is clickable
     setAction(action){
         this.box.interactive = true;
         this.box.buttonMode = true;
@@ -583,6 +673,8 @@ class UIButton{
         this.box.on('pointerdown', function(){
             action();
         });
+        
+        this.drawBox(this.baseColor)
     }
 }
 
@@ -598,6 +690,7 @@ class Lane extends UIButton{
         this.units = [];
     }
     
+    //draws the lane sprite over the button default box
     drawLane(color = this.baseColor){
         this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/Lane.png`));
         this.image.anchor.set(0.5,0.5);
@@ -606,6 +699,7 @@ class Lane extends UIButton{
         this.image.y = this.y;
     }
     
+    //tints the lane to show that it is selected and un-tints it when it is deselected
     select(value){
         if(value){
             this.image.tint = this.hoverColor;
@@ -615,6 +709,7 @@ class Lane extends UIButton{
         }
     }
     
+    //updates all of the units on the lane
     update(deltaTime){
         for(let i = 0; i < this.units.length; i++){
             this.units[i].update(deltaTime);
@@ -623,6 +718,7 @@ class Lane extends UIButton{
         this.units = this.units.filter(u=>u.alive);
     }
     
+    //returns whether or not the specified section of the lane contains any units
     sectionFull(index){
         if(index >= this.laneLength || index < 0){
             return true;
@@ -639,11 +735,13 @@ class Lane extends UIButton{
         return false;
     }
     
+    //returns the index of the section of the lane that corresponds to the given xPosition
     getSection(xValue){
         let currentSection = Math.floor((xValue - (this.x - (this.pixelLength / 2))) / this.sectionLength);
         return currentSection;
     }
     
+    //returns the closest unit in front of the given unit
     getForwardUnit(unit){
         let closestUnit = false;
         let closestDistance = this.pixelLength;
@@ -668,12 +766,14 @@ class Lane extends UIButton{
         }
     }
     
+    //stages the lane
     stageButton(stage){
         stage.addChild(this.box);
         stage.addChild(this.text);
         stage.addChild(this.image);
     }
     
+    //returns all of the enemy units in front of the given unit
     getEnemies(unit){
         let enemies = [];
         
@@ -692,6 +792,7 @@ class Lane extends UIButton{
         return enemies;
     }
     
+    //removes all units and clears the lane
     resetLane(){
         for(let i = 0; i < this.units.length; i++){
             this.units[i].unstageUnit();

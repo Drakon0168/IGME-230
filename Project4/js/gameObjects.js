@@ -1,4 +1,5 @@
 class Unit{
+    //Sets up the units stats and position based on the direction of motion
     constructor(lane, height = 75, width = 40, color = 0x777777, type = "", direction){
         this.color = color;
         this.direction = direction;
@@ -70,6 +71,7 @@ class Unit{
         this.health = this.maxHealth;
     }
     
+    //Draws the unit and their healthbar relative to their position
     drawSelf(){
         this.image.x = this.x;
         this.image.y = this.y;
@@ -82,6 +84,8 @@ class Unit{
         this.healthBar.endFill();
     }
     
+    //Handles all unit AI making them move to the enemy castle and attack any enemies in their path
+    // also updates their health and kills them when their health is below 0
     update(deltaTime){
         this.attackTimer += deltaTime;
         let currentSection = this.lane.getSection(this.x);
@@ -141,6 +145,7 @@ class Unit{
         }
     }
     
+    //Moves the unit down the lane based on their move speed
     move(deltaTime){
         this.x += this.speed * this.direction * deltaTime;
         
@@ -149,16 +154,19 @@ class Unit{
         this.healthBar.x = this.x;
     }
     
+    //Kills and unstages the unit when their health is below 0
     die(){
         this.alive = false;
         this.unstageUnit();
     }
     
+    //Stages the unit and associated sprites
     stageUnit(stage){
         stage.addChild(this.image);
         stage.addChild(this.healthBar);
     }
     
+    //Unstages the unit and associated sprites
     unstageUnit(){
         this.image.parent.removeChild(this.image);
         this.healthBar.parent.removeChild(this.healthBar);
@@ -173,6 +181,7 @@ class EnemyManager{
         this.spawnTimer = 0;
     }
     
+    //Spawns a random unit at a set interval
     update(deltaTime){
         this.spawnTimer += deltaTime;
         
@@ -183,6 +192,7 @@ class EnemyManager{
         }
     }
     
+    //Spawns a random unit in a random lane
     spawnUnit(){
         let laneNum = Math.floor(Math.random() * 3) + 1;
         return this.gameScene.spawnUnit(this.enemyTypes[Math.floor(Math.random() * this.enemyTypes.length)], -1, this.gameScene.getLane(laneNum));
@@ -208,6 +218,7 @@ class Castle{
         this.drawHealthBar();
     }
     
+    //Draws the castle's health bar
     drawHealthBar(){
         this.healthBar.beginFill(0xFF0000);
         this.healthBar.drawRect(0, -12, 575, 25);
@@ -217,6 +228,8 @@ class Castle{
         this.healthBar.endFill();
     }
     
+    //Kills the castle and ends the game when its health reaches 0,
+    // also updates the healthbar
     update(deltaTime){
         this.healthBar.scale.x = this.health / this.maxHealth;
         if(this.health <= 0){
@@ -228,14 +241,18 @@ class Castle{
         }
     }
     
+    //Resets the castles health to max
     resetCastle(){
         this.health = this.maxHealth;
     }
     
+    //Stages the castle and associated sprites
     stageCastle(stage){
         stage.addChild(this.healthBar);
     }
     
+    //Moves to the game over screen and displays a win or loss message depending on which
+    //casle died
     die(){
         if(this.direction == 1){
             this.healthBar.parent.sceneManager.gameOverScene.message.setText("You Lose!");
