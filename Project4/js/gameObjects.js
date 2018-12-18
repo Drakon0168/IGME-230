@@ -11,6 +11,9 @@ class Unit{
         this.lane = lane;
         this.x = lane.x + ((lane.pixelLength / 2) * direction*-1);
         this.y = lane.y - (this.height / 2);
+        this.animationSpeed = 0.25;
+        this.animationTimer = 0;
+        this.currentFrame = 0;
         
         this.type = type;
         this.attackTimer = 0;
@@ -68,6 +71,8 @@ class Unit{
         
         this.drawSelf();
         
+        this.setFrame(0);
+        
         this.health = this.maxHealth;
     }
     
@@ -88,6 +93,7 @@ class Unit{
     // also updates their health and kills them when their health is below 0
     update(deltaTime){
         this.attackTimer += deltaTime;
+        this.animationTimer += deltaTime;
         let currentSection = this.lane.getSection(this.x);
         let forwardUnit = this.lane.getForwardUnit(this);
         let canMove = true;
@@ -111,6 +117,9 @@ class Unit{
                         }
                         
                         this.attackTimer = 0;
+                        
+                        this.setFrame(4);
+                        this.animationTimer = 0;
                     }
                     
                     canMove = false;
@@ -126,7 +135,23 @@ class Unit{
         
         if((currentSection > 1 && this.direction == -1) || (currentSection < this.lane.laneLength - 2 && this.direction == 1)){
             if(canMove){
+                if(this.animationTimer >= this.animationSpeed){
+                    if(this.currentFrame < 3){
+                        this.nextFrame();
+                    }
+                    if(this.currentFrame == 3){
+                        this.setFrame(0);
+                    }
+                    
+                    this.animationTimer = 0;
+                }
                 this.move(deltaTime);
+            }
+            else{
+                if(this.animationTimer > this.animationSpeed){
+                    this.setFrame(0);
+                    this.animationTimer = 0;
+                }
             }
         }
         else{
@@ -170,6 +195,23 @@ class Unit{
     unstageUnit(){
         this.image.parent.removeChild(this.image);
         this.healthBar.parent.removeChild(this.healthBar);
+    }
+    
+    //Moves to the next animation frame
+    nextFrame(){
+        this.currentFrame++;
+        
+        if(this.currentFrame >= 5){
+            this.currentFrame = 0;
+        }
+        
+        this.setFrame(this.currentFrame);
+    }
+    
+    setFrame(frame = 0){
+        this.image.texture.frame = new PIXI.Rectangle(frame * this.width, 0, this.width, this.height);
+        
+        this.currentFrame = frame;
     }
 }
 
