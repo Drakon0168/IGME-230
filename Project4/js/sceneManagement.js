@@ -7,22 +7,36 @@ class SceneManager{
         this.sceneHeight = app.view.height;
         this.deltaTime = 0;
         
+        //load in max level
+        const key = "jxd8037-MaxLevel";
+        this.maxLevel = localStorage.getItem(key);
+        
+        if(!this.maxLevel){
+            this.maxLevel = 1;
+            localStorage.setItem(key, this.maxLevel);
+        }
+        
+        this.currentLevel = 1;
+        
         this.menuScene = new MainMenuScreen(this);
         this.gameScene = new GameScreen(this);
         this.upgradeScene = new UpgradeScreen(this);
         this.gameOverScene = new GameOverScreen(this);
         this.instructionsScene = new InstructionsScene(this);
+        this.levelScene = new LevelsScene(this);
         
         this.gameScene.visible = false;
         this.upgradeScene.visible = false;
         this.gameOverScene.visible = false;
         this.instructionsScene.visible = false;
+        this.levelScene.visible = false;
         
         app.stage.addChild(this.menuScene);
         app.stage.addChild(this.gameScene);
         app.stage.addChild(this.upgradeScene);
         app.stage.addChild(this.gameOverScene);
         app.stage.addChild(this.instructionsScene);
+        app.stage.addChild(this.levelScene);
         
         this.currentScene = undefined;
         this.switchScene("MENU");
@@ -39,6 +53,7 @@ class SceneManager{
                 this.upgradeScene.visible = false;
                 this.gameOverScene.visible = false;
                 this.instructionsScene.visible = false;
+                this.levelScene.visible = false;
                 break;
             case "GAME":
                 this.currentScene = this.gameScene;
@@ -47,6 +62,7 @@ class SceneManager{
                 this.upgradeScene.visible = false;
                 this.gameOverScene.visible = false;
                 this.instructionsScene.visible = false;
+                this.levelScene.visible = false;
                 break;
             case "UPGRADE":
                 this.currentScene = this.upgradeScene;
@@ -55,6 +71,7 @@ class SceneManager{
                 this.upgradeScene.visible = true;
                 this.gameOverScene.visible = false;
                 this.instructionsScene.visible = false;
+                this.levelScene.visible = false;
                 break;
             case "GAMEOVER":
                 this.currentScene = this.gameOverScene;
@@ -63,6 +80,7 @@ class SceneManager{
                 this.upgradeScene.visible = false;
                 this.gameOverScene.visible = true;
                 this.instructionsScene.visible = false;
+                this.levelScene.visible = false;
                 break;
             case "INSTRUCTIONS":
                 this.currentScene = this.instructionsScene;
@@ -71,6 +89,16 @@ class SceneManager{
                 this.upgradeScene.visible = false;
                 this.gameOverScene.visible = false;
                 this.instructionsScene.visible = true;
+                this.levelScene.visible = false;
+                break;
+            case "LEVEL":
+                this.currentScene = this.instructionsScene;
+                this.menuScene.visible = false;
+                this.gameScene.visible = false;
+                this.upgradeScene.visible = false;
+                this.gameOverScene.visible = false;
+                this.instructionsScene.visible = false;
+                this.levelScene.visible = true;
                 break;
         }
     }
@@ -141,7 +169,7 @@ class MainMenuScreen extends Scene{
         
         this.playButton = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 150, 200, 50, "Play");
         this.playButton.setAction(function(){
-            sceneManager.switchScene("GAME");
+            sceneManager.switchScene("LEVEL");
         });
         this.playButton.stageButton(this);
         
@@ -590,6 +618,7 @@ class InstructionsScene extends Scene{
     setup(){
         super.setup("InstructionsScreen.png");
         
+        //Setup buttons
         this.menuButton = new UIButton(this.sceneManager.sceneWidth / 2, 35, 200, 50, "Main Menu");
         this.menuButton.setAction(function(){
             sceneManager.switchScene("MENU");
@@ -602,11 +631,137 @@ class InstructionsScene extends Scene{
         });
         this.playButton.stageButton(this);
         
+        //Setup labels
         this.instructionsLabel = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 100, 800, 300);
         this.instructionsLabel.setText("Your Goal: Send your units down the lanes to the enemy's side\nto hurt them while preventing their units from getting to your side.\n" + 
                                       "\nControls: Click the lanes to select them, then click the buttons\nat the top of the screen to send your units down the selected lane.\n" +
                                       "\nClick the upgrade button to access the upgrade screen and use\nyour gold to provide various bonuses to your army and castle.");
         this.instructionsLabel.stageButton(this);
+    }
+}
+
+//Levels Scene-------------------------------------------------------------------------------
+class LevelsScene extends Scene{
+    constructor(sceneManager){
+        super(sceneManager);
+    }
+    
+    //Sets up all of the buttons and labels on the screen
+    setup(){
+        super.setup("InstructionsScreen.png");
+        
+        //Setup Buttons
+        this.menuButton = new UIButton(this.sceneManager.sceneWidth / 2, 35, 200, 50, "Main Menu");
+        this.menuButton.setAction(function(){
+            sceneManager.switchScene("MENU");
+        });
+        this.menuButton.stageButton(this);
+        
+        this.levels = [];
+        
+        let level1Button = new UIButton(this.sceneManager.sceneWidth / 2, 125, 300,50,"Swords and Spears");
+        level1Button.setAction(function(){
+            sceneManager.gameScene.enemyCastle.maxHealth = 500;
+            sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SWORD", "SPEAR"], 4);
+            
+            sceneManager.currentLevel = 1;
+            sceneManager.switchScene("GAME");
+        });
+        this.levels.push(level1Button);
+        
+        let level2Button = new UIButton(this.sceneManager.sceneWidth / 2, 185, 300,50,"Speed and Range");
+        level2Button.setAction(function(){
+            sceneManager.gameScene.enemyCastle.maxHealth = 500;
+            sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["BOW", "FLYING"], 2.5);
+            
+            sceneManager.currentLevel = 2;
+            sceneManager.switchScene("GAME");
+        });
+        this.levels.push(level2Button);
+        
+        let level3Button = new UIButton(this.sceneManager.sceneWidth / 2, 245, 300,50,"Big and Strong");
+        level3Button.setAction(function(){
+            sceneManager.gameScene.enemyCastle.maxHealth = 750;
+            sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SPEAR", "SHIELD"], 3);
+            
+            sceneManager.currentLevel = 3;
+            sceneManager.switchScene("GAME");
+        });
+        this.levels.push(level3Button);
+        
+        let level4Button = new UIButton(this.sceneManager.sceneWidth / 2, 305, 300,50,"Bows and Arrows");
+        level4Button.setAction(function(){
+            sceneManager.gameScene.enemyCastle.maxHealth = 750;
+            sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["BOW"], 1.5);
+            
+            sceneManager.currentLevel = 4;
+            sceneManager.switchScene("GAME");
+        });
+        this.levels.push(level4Button);
+        
+        let level5Button = new UIButton(this.sceneManager.sceneWidth / 2, 365, 300,50,"+ The Kitchen Sink");
+        level5Button.setAction(function(){
+            sceneManager.gameScene.enemyCastle.maxHealth = 750;
+            sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SWORD", "SPEAR", "BOW", "FLYING", "SHIELD"], 2.5);
+            
+            sceneManager.currentLevel = 5;
+            sceneManager.switchScene("GAME");
+        });
+        this.levels.push(level5Button);
+        
+        let level6Button = new UIButton(this.sceneManager.sceneWidth / 2, 425, 300,50,"Death Awaits");
+        level6Button.setAction(function(){
+            sceneManager.gameScene.enemyCastle.maxHealth = 1000;
+            sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SWORD", "SPEAR", "BOW", "FLYING", "SHIELD"], 1);
+            
+            sceneManager.currentLevel = 6;
+            sceneManager.switchScene("GAME");
+        });
+        this.levels.push(level6Button);
+        
+        let level7Button = new UIButton(this.sceneManager.sceneWidth / 2, 485, 300,50,"Too Many Shields");
+        level7Button.setAction(function(){
+            sceneManager.gameScene.enemyCastle.maxHealth = 1000;
+            sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SHIELD"], 2);
+            
+            sceneManager.currentLevel = 7;
+            sceneManager.switchScene("GAME");
+        });
+        this.levels.push(level7Button);
+        
+        let level8Button = new UIButton(this.sceneManager.sceneWidth / 2, 545, 300,50,"Swordmageddon");
+        level8Button.setAction(function(){
+            sceneManager.gameScene.enemyCastle.maxHealth = 1250;
+            sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SWORD"], 1.5);
+            
+            sceneManager.currentLevel = 8;
+            sceneManager.switchScene("GAME");
+        });
+        this.levels.push(level8Button);
+        
+        let level9Button = new UIButton(this.sceneManager.sceneWidth / 2, 605, 300,50,"Long Range Assault");
+        level9Button.setAction(function(){
+            sceneManager.gameScene.enemyCastle.maxHealth = 1250;
+            sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SPEAR", "BOW"], 1.5);
+            
+            sceneManager.currentLevel = 9;
+            sceneManager.switchScene("GAME");
+        });
+        this.levels.push(level9Button);
+        
+        let level10Button = new UIButton(this.sceneManager.sceneWidth / 2, 665, 300,50,"Death Came Back");
+        level10Button.setAction(function(){
+            sceneManager.gameScene.enemyCastle.maxHealth = 1250;
+            sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SWORD", "SPEAR", "SHIELD"], 0.75);
+            
+            sceneManager.currentLevel = 10;
+            sceneManager.switchScene("GAME");
+        });
+        this.levels.push(level10Button);
+        
+        for(let i = 0; i < this.levels.length; i++){
+            this.levels[i].stageButton(this);
+        }
     }
 }
 

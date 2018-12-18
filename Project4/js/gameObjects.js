@@ -27,7 +27,7 @@ class Unit{
                 this.damage = 20;
                 this.attackSpeed = 1.25;
                 this.attackRange = 50;
-                this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/SwordUnit.png`));
+                this.texture = new PIXI.Texture.fromImage(`images/SwordUnit.png`);
                 break;
             case "SPEAR":
                 this.speed = 75;
@@ -35,7 +35,7 @@ class Unit{
                 this.damage = 15;
                 this.attackSpeed = 0.75;
                 this.attackRange = 150;
-                this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/SpearUnit.png`));
+                this.texture = new PIXI.Texture.fromImage(`images/SpearUnit.png`);
                 break;
             case "BOW":
                 this.speed = 75;
@@ -43,7 +43,7 @@ class Unit{
                 this.damage = 10;
                 this.attackSpeed = 1;
                 this.attackRange = 300;
-                this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/BowUnit.png`));
+                this.texture = new PIXI.Texture.fromImage(`images/BowUnit.png`);
                 break;
             case "FLYING":
                 this.speed = 150;
@@ -51,7 +51,7 @@ class Unit{
                 this.damage = 15;
                 this.attackSpeed = 1;
                 this.attackRange = 50;
-                this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/FastUnit.png`));
+                this.texture = new PIXI.Texture.fromImage(`images/FastUnit.png`);
                 break;
             case "SHIELD":
                 this.speed = 50;
@@ -59,10 +59,11 @@ class Unit{
                 this.damage = 25;
                 this.attackSpeed = 0.5;
                 this.attackRange = 50;
-                this.image = new PIXI.Sprite(new PIXI.Texture.fromImage(`images/ShieldUnit.png`));
+                this.texture = new PIXI.Texture.fromImage(`images/ShieldUnit.png`);
                 break;
         }
         
+        this.image = new PIXI.Sprite(this.texture);
         this.image.anchor.set(0.5,0.5);
         
         if(direction == -1){
@@ -209,7 +210,9 @@ class Unit{
     }
     
     setFrame(frame = 0){
-        this.image.texture.frame = new PIXI.Rectangle(frame * this.width, 0, this.width, this.height);
+        this.texture.frame = new PIXI.Rectangle(frame * this.width, 0, this.width, this.height);
+        
+        this.image.texture = new PIXI.Texture.from(this.texture);
         
         this.currentFrame = frame;
     }
@@ -301,6 +304,12 @@ class Castle{
         }
         else{
             this.healthBar.parent.sceneManager.gameOverScene.message.setText("You Win!");
+            
+            //update local storage with max level
+            if(this.healthBar.parent.sceneManager.maxLevel == this.healthBar.parent.sceneManager.currentLevel){
+                this.healthBar.parent.sceneManager.maxLevel++;
+                localStorage.setItem(this.healthBar.parent.sceneManager.key, this.healthBar.parent.sceneManager.maxLevel);
+            }
         }
         
         this.healthBar.parent.sceneManager.switchScene("GAMEOVER");
