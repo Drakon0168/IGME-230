@@ -28,6 +28,7 @@ class Unit{
                 this.attackSpeed = 1.25;
                 this.attackRange = 50;
                 this.texture = this.loadSpriteSheet(`images/SwordUnit.png`);
+                this.attackSound = new Howl({src: ['sounds/sword.wav']});
                 break;
             case "SPEAR":
                 this.speed = 75;
@@ -36,6 +37,7 @@ class Unit{
                 this.attackSpeed = 0.75;
                 this.attackRange = 150;
                 this.texture = this.loadSpriteSheet(`images/SpearUnit.png`);
+                this.attackSound = new Howl({src: ['sounds/sword.wav']});
                 break;
             case "BOW":
                 this.speed = 75;
@@ -44,6 +46,7 @@ class Unit{
                 this.attackSpeed = 1;
                 this.attackRange = 300;
                 this.texture = this.loadSpriteSheet(`images/BowUnit.png`);
+                this.attackSound = new Howl({src: ['sounds/arrow.wav']});
                 break;
             case "FLYING":
                 this.speed = 150;
@@ -52,6 +55,7 @@ class Unit{
                 this.attackSpeed = 1;
                 this.attackRange = 50;
                 this.texture = this.loadSpriteSheet(`images/FastUnit.png`);
+                this.attackSound = new Howl({src: ['sounds/sword.wav']});
                 break;
             case "SHIELD":
                 this.speed = 50;
@@ -60,6 +64,7 @@ class Unit{
                 this.attackSpeed = 0.5;
                 this.attackRange = 50;
                 this.texture = this.loadSpriteSheet(`images/ShieldUnit.png`);
+                this.attackSound = new Howl({src: ['sounds/shield.mp3']});
                 break;
         }
         
@@ -134,6 +139,7 @@ class Unit{
                         
                         this.attackTimer = 0;
                         
+                        this.attackSound.play();
                         this.setFrame(4);
                     }
                     
@@ -170,6 +176,7 @@ class Unit{
             if(this.attackTimer > 1 / this.attackSpeed){
                 this.image.parent.getCastle(this.direction).health -= this.damage;
                 this.attackTimer = 0;
+                this.attackSound.play();
                 this.setFrame(4);
             }
             
