@@ -1,0 +1,197 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    color: #2E2E2E;
+}
+
+/* Color Scheme
+    Text: #2E2E2E
+    Content: #B8B8B8
+    Titles: #A3A3A3
+    Link: #8890AB
+    Link Hover: #9AA3C2
+    Background: #324D30
+*/
+
+body{
+    background-color: #324D30;
+}
+
+header{
+    display: block;
+    text-align: center;
+    width: auto;
+    background-color: #A3A3A3;
+    margin: 20px 20px;
+}
+
+section{
+    margin: 20px 245px 0 20px;
+    padding: 10px 15px;
+    width: auto;
+    background-color: #B8B8B8;
+}
+
+nav{
+    width: 250px;
+    float: right;
+    width: auto;
+    right: 10px;
+    top: 76px;
+    position: fixed;
+}
+
+canvas{
+    display: block;
+    margin: auto;
+}
+
+iframe{
+    display: block;
+    margin: auto;
+    width: 80%;
+    height: 900px;
+}
+
+hr{
+    color: #00BF58;
+    background-color: #00BF58;
+    border: none;
+    width: 90%;
+    margin: auto;
+}
+
+h1, h2, h4, img{
+    background-color: #A3A3A3;
+}
+
+h2{
+    text-indent: 15px;
+    margin-bottom: 10px;
+}
+
+h4{
+    text-indent: 50px;
+}
+
+p, li{
+    background-color: #B8B8B8;
+    text-indent: 75px;
+}
+
+li{
+    list-style-type: none;
+}
+
+p.caption{
+    margin-bottom: 10px;
+    font-size: 32px;
+    text-align: center;
+    text-indent: 0;
+}
+    
+img{
+    display: block;
+    margin: auto;
+    margin-bottom: 50px;
+    width: 100%;
+}
+
+a{
+    color: #202020;
+    text-decoration: underline overline;
+    font-style: italic;
+}
+
+#links li a{
+    font-size: 32px;
+    font-style: normal;
+    text-decoration: none;
+    background-color: #8890AB;
+    text-align: center;
+    margin: 0 10px;
+    width: 200px;
+    transition: 0.5s;
+    float: right;
+    clear: both;
+    text-indent: 0px;
+}
+
+#links li a:hover{
+    background-color: #9AA3C2;
+    width: 250px;
+}
+
+#phonelinks{
+    display: none;
+}
+
+@media screen and (max-width: 480px){
+    
+    section{
+        margin: 5px 115px 0 7px;
+        width: auto;
+    }
+    
+    header{
+        margin: 5px 7px 0 7px;
+        width: auto;
+    }
+    
+    nav{
+        top: 33%;
+        right: 0;
+    }
+    
+    h2{
+        text-indent: 7px;
+    }
+
+    h4{
+        text-indent: 20px;
+    }
+    
+    p, li{
+        text-indent: 40px;
+    }
+    
+    p.caption{
+        font-size: 18px;
+        margin-bottom: 5px;
+        text-indent: 0;
+    }
+    
+    img{
+        margin: auto;
+        margin-bottom: 30px;
+        width: 100%;
+    }
+    
+    #links{
+        display: none;
+    }
+    
+    #phonelinks{
+        display: block;
+    }
+    
+    #phonelinks li a{
+        font-size: 18px;
+        text-decoration: none;
+        font-style: normal;
+        background-color: #8890AB;
+        text-align: center;
+        margin: 0 7px;
+        width: 100px;
+        transition: 0.5s;
+        float: right;
+        clear: both;
+        text-indent: 0px;
+    }
+    
+    #phonelinks li a:hover{
+        background-color: #9AA3C2;
+        width: 125px;
+    }
+}
