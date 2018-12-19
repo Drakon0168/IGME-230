@@ -99,6 +99,7 @@ class SceneManager{
                 this.gameOverScene.visible = false;
                 this.instructionsScene.visible = false;
                 this.levelScene.visible = true;
+                this.levelScene.updateLevels();
                 break;
         }
     }
@@ -627,15 +628,21 @@ class InstructionsScene extends Scene{
         
         this.playButton = new UIButton(this.sceneManager.sceneWidth / 2, 95, 200, 50, "Play");
         this.playButton.setAction(function(){
-            sceneManager.switchScene("GAME");
+            sceneManager.switchScene("LEVEL");
         });
         this.playButton.stageButton(this);
         
         //Setup labels
-        this.instructionsLabel = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 100, 800, 300);
+        this.instructionsLabel = new UIButton(this.sceneManager.sceneWidth / 2, (this.sceneManager.sceneHeight / 2) + 50, 850, 575);
         this.instructionsLabel.setText("Your Goal: Send your units down the lanes to the enemy's side\nto hurt them while preventing their units from getting to your side.\n" + 
                                       "\nControls: Click the lanes to select them, then click the buttons\nat the top of the screen to send your units down the selected lane.\n" +
-                                      "\nClick the upgrade button to access the upgrade screen and use\nyour gold to provide various bonuses to your army and castle.");
+                                      "\nClick the upgrade button to access the upgrade screen and use\nyour gold to provide various bonuses to your army and castle.\n" +
+                                      "\n                                                Units:\n" + 
+                                      "Sword: Basic unit with average speed and health, high damage,\nshort attack range.\n" + 
+                                      "Spear: Medium range unit that can hit multiple enemies with each\nattack.\n" +
+                                      "Bow: Long range unit that can shoot over allies, deals low damage.\n" +
+                                      "Fast: Low health, but very fast movement and attack speed, good\nfor delaying the enemy.\n" +
+                                      "Shield: Slow unit with a lot of health but low damage and attack rate.");
         this.instructionsLabel.stageButton(this);
     }
 }
@@ -661,6 +668,10 @@ class LevelsScene extends Scene{
         
         let level1Button = new UIButton(this.sceneManager.sceneWidth / 2, 125, 300,50,"Swords and Spears");
         level1Button.setAction(function(){
+            if(sceneManager.maxLevel < 1){
+                return;
+            }
+            
             sceneManager.gameScene.enemyCastle.maxHealth = 500;
             sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SWORD", "SPEAR"], 4);
             
@@ -671,9 +682,13 @@ class LevelsScene extends Scene{
         
         let level2Button = new UIButton(this.sceneManager.sceneWidth / 2, 185, 300,50,"Speed and Range");
         level2Button.setAction(function(){
+            if(sceneManager.maxLevel < 2){
+                return;
+            }
+            
             sceneManager.gameScene.enemyCastle.maxHealth = 500;
             sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["BOW", "FLYING"], 2.5);
-            
+
             sceneManager.currentLevel = 2;
             sceneManager.switchScene("GAME");
         });
@@ -681,9 +696,13 @@ class LevelsScene extends Scene{
         
         let level3Button = new UIButton(this.sceneManager.sceneWidth / 2, 245, 300,50,"Big and Strong");
         level3Button.setAction(function(){
+            if(sceneManager.maxLevel < 3){
+                return;
+            }
+            
             sceneManager.gameScene.enemyCastle.maxHealth = 750;
             sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SPEAR", "SHIELD"], 3);
-            
+
             sceneManager.currentLevel = 3;
             sceneManager.switchScene("GAME");
         });
@@ -691,9 +710,13 @@ class LevelsScene extends Scene{
         
         let level4Button = new UIButton(this.sceneManager.sceneWidth / 2, 305, 300,50,"Bows and Arrows");
         level4Button.setAction(function(){
+            if(sceneManager.maxLevel < 4){
+                return;
+            }
+            
             sceneManager.gameScene.enemyCastle.maxHealth = 750;
             sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["BOW"], 1.5);
-            
+
             sceneManager.currentLevel = 4;
             sceneManager.switchScene("GAME");
         });
@@ -701,9 +724,13 @@ class LevelsScene extends Scene{
         
         let level5Button = new UIButton(this.sceneManager.sceneWidth / 2, 365, 300,50,"+ The Kitchen Sink");
         level5Button.setAction(function(){
+            if(sceneManager.maxLevel < 5){
+                return;
+            }
+            
             sceneManager.gameScene.enemyCastle.maxHealth = 750;
             sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SWORD", "SPEAR", "BOW", "FLYING", "SHIELD"], 2.5);
-            
+
             sceneManager.currentLevel = 5;
             sceneManager.switchScene("GAME");
         });
@@ -711,9 +738,13 @@ class LevelsScene extends Scene{
         
         let level6Button = new UIButton(this.sceneManager.sceneWidth / 2, 425, 300,50,"Death Awaits");
         level6Button.setAction(function(){
+            if(sceneManager.maxLevel < 6){
+                return;
+            }
+            
             sceneManager.gameScene.enemyCastle.maxHealth = 1000;
             sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SWORD", "SPEAR", "BOW", "FLYING", "SHIELD"], 1);
-            
+
             sceneManager.currentLevel = 6;
             sceneManager.switchScene("GAME");
         });
@@ -721,9 +752,13 @@ class LevelsScene extends Scene{
         
         let level7Button = new UIButton(this.sceneManager.sceneWidth / 2, 485, 300,50,"Too Many Shields");
         level7Button.setAction(function(){
+            if(sceneManager.maxLevel < 7){
+                return;
+            }
+            
             sceneManager.gameScene.enemyCastle.maxHealth = 1000;
             sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SHIELD"], 2);
-            
+
             sceneManager.currentLevel = 7;
             sceneManager.switchScene("GAME");
         });
@@ -731,9 +766,13 @@ class LevelsScene extends Scene{
         
         let level8Button = new UIButton(this.sceneManager.sceneWidth / 2, 545, 300,50,"Swordmageddon");
         level8Button.setAction(function(){
+            if(sceneManager.maxLevel < 8){
+                return;
+            }
+            
             sceneManager.gameScene.enemyCastle.maxHealth = 1250;
             sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SWORD"], 1.5);
-            
+
             sceneManager.currentLevel = 8;
             sceneManager.switchScene("GAME");
         });
@@ -741,9 +780,13 @@ class LevelsScene extends Scene{
         
         let level9Button = new UIButton(this.sceneManager.sceneWidth / 2, 605, 300,50,"Long Range Assault");
         level9Button.setAction(function(){
+            if(sceneManager.maxLevel < 9){
+                return;
+            }
+            
             sceneManager.gameScene.enemyCastle.maxHealth = 1250;
             sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SPEAR", "BOW"], 1.5);
-            
+
             sceneManager.currentLevel = 9;
             sceneManager.switchScene("GAME");
         });
@@ -751,9 +794,13 @@ class LevelsScene extends Scene{
         
         let level10Button = new UIButton(this.sceneManager.sceneWidth / 2, 665, 300,50,"Death Came Back");
         level10Button.setAction(function(){
+            if(sceneManager.maxLevel < 10){
+                return;
+            }
+            
             sceneManager.gameScene.enemyCastle.maxHealth = 1250;
             sceneManager.gameScene.enemyManager = new EnemyManager(sceneManager.gameScene, ["SWORD", "SPEAR", "SHIELD"], 0.75);
-            
+
             sceneManager.currentLevel = 10;
             sceneManager.switchScene("GAME");
         });
@@ -761,6 +808,19 @@ class LevelsScene extends Scene{
         
         for(let i = 0; i < this.levels.length; i++){
             this.levels[i].stageButton(this);
+        }
+        
+        console.log("Max Level: " + this.sceneManager.maxLevel);
+    }
+    
+    updateLevels(){
+        for(let i = 0; i < this.levels.length; i++){
+            if(i + 1 > this.sceneManager.maxLevel){
+                this.levels[i].drawBox(this.levels[i].pressedColor);
+            }
+            else{
+                this.levels[i].drawBox(this.levels[i].baseColor);
+            }
         }
     }
 }
