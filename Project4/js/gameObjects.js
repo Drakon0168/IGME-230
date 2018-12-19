@@ -308,7 +308,8 @@ class Castle{
             //update local storage with max level
             if(this.healthBar.parent.sceneManager.maxLevel == this.healthBar.parent.sceneManager.currentLevel){
                 this.healthBar.parent.sceneManager.maxLevel++;
-                localStorage.setItem(this.healthBar.parent.sceneManager.key, this.healthBar.parent.sceneManager.maxLevel);
+                this.healthBar.parent.sceneManager.updateStorage();
+                debugger;
             }
         }
         

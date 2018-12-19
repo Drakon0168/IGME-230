@@ -8,12 +8,12 @@ class SceneManager{
         this.deltaTime = 0;
         
         //load in max level
-        const key = "jxd8037-MaxLevel";
-        this.maxLevel = localStorage.getItem(key);
+        this.key = "jxd8037-MaxLevel";
+        this.maxLevel = localStorage.getItem(this.key);
         
         if(!this.maxLevel){
             this.maxLevel = 1;
-            localStorage.setItem(key, this.maxLevel);
+            localStorage.setItem(this.key, this.maxLevel);
         }
         
         this.currentLevel = 1;
@@ -109,6 +109,11 @@ class SceneManager{
         this.deltaTime = deltaTime;
         
         this.currentScene.update(deltaTime);
+    }
+    
+    //Updates the max level stored in local storage
+    updateStorage(){
+        localStorage.setItem(this.key, this.maxLevel);
     }
 }
 
